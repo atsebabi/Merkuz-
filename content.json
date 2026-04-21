@@ -1,10 +1,19 @@
 {
   "nav": {
-    "logo": "Merkuz",
+    "logo": "Merkuz ",
     "links": [
-      { "label": "Our Story", "href": "#story" },
-      { "label": "Services", "href": "#services" },
-      { "label": "Programs", "href": "#programs" }
+      {
+        "label": "Our Story",
+        "href": "#story"
+      },
+      {
+        "label": "Services",
+        "href": "#services"
+      },
+      {
+        "label": "Programs",
+        "href": "#programs"
+      }
     ],
     "ctaLabel": "Get in Touch",
     "ctaHref": "#contact"
