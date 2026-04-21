@@ -236,7 +236,9 @@
       font-size: 0.72rem;
       color: rgba(249, 246, 241, 0.4);
       margin-bottom: 12px;
-      word-break: break-all;
+      word-break: break-word;
+      white-space: pre-line;
+      line-height: 1.5;
     }
 
     .main {
@@ -411,22 +413,12 @@
 
       <form id="loginForm">
         <div class="field">
-          <label>GitHub Repository</label>
-          <input type="text" id="loginRepo" placeholder="owner/repo" value="atsebabi/Merkuz-" required>
-          <div class="hint">The repo where content.json is committed.</div>
+          <label>Username</label>
+          <input type="text" id="loginUsername" autocomplete="username" required>
         </div>
         <div class="field">
-          <label>Branch</label>
-          <input type="text" id="loginBranch" value="main" required>
-        </div>
-        <div class="field">
-          <label>Personal Access Token</label>
-          <input type="password" id="loginToken" placeholder="github_pat_..." required autocomplete="off">
-          <div class="hint">
-            Fine-grained token with <strong>Contents: Read & Write</strong> permission for this repo.
-            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--olive);">Create one →</a>
-            Stored only in your browser.
-          </div>
+          <label>Password</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" required>
         </div>
         <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
           <span id="loginBtnLabel">Sign In</span>
@@ -453,7 +445,7 @@
 
       <div class="sidebar-footer">
         <div class="sidebar-meta" id="repoMeta"></div>
-        <a href="index.html" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--clay-light);border-color:rgba(249,246,241,0.15);">View Site ↗</a>
+        <a href="/" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--clay-light);border-color:rgba(249,246,241,0.15);">View Site ↗</a>
         <button class="btn btn-danger btn-sm" id="logoutBtn">Sign Out</button>
       </div>
     </aside>
@@ -783,16 +775,13 @@
     // STATE
     // ══════════════════════════════════════════════════════════════════
     const state = {
-      auth: null,       // { repo, branch, token }
+      session: null,    // { token, expiresAt, username }
       content: null,    // parsed JSON
       original: null,   // JSON string (for dirty check)
-      sha: null,        // current file sha from GitHub
       section: 'nav',
     };
 
-    const LS_KEY = 'merkuz-admin-auth';
-    const API = 'https://api.github.com';
-    const FILE_PATH = 'content.json';
+    const LS_KEY = 'merkuz-admin-session';
 
     // ══════════════════════════════════════════════════════════════════
     // UTILITIES
@@ -805,14 +794,6 @@
       const last = keys.pop();
       const parent = keys.reduce((o, k) => (o[k] = o[k] || {}), obj);
       parent[last] = value;
-    }
-
-    // UTF-8 safe base64 (GitHub contents API is base64-encoded)
-    function b64encode(str) {
-      return btoa(unescape(encodeURIComponent(str)));
-    }
-    function b64decode(str) {
-      return decodeURIComponent(escape(atob(str.replace(/\n/g, ''))));
     }
 
     function showAlert(elId, msg, type = 'error') {
@@ -839,74 +820,55 @@
     }
 
     // ══════════════════════════════════════════════════════════════════
-    // AUTH
+    // SESSION
     // ══════════════════════════════════════════════════════════════════
-    function loadAuth() {
+    function loadSession() {
       try {
         const raw = localStorage.getItem(LS_KEY);
         if (!raw) return null;
-        return JSON.parse(raw);
+        const s = JSON.parse(raw);
+        if (!s.token || !s.expiresAt || Date.now() >= s.expiresAt) return null;
+        return s;
       } catch { return null; }
     }
-    function saveAuth(auth) {
-      localStorage.setItem(LS_KEY, JSON.stringify(auth));
-    }
-    function clearAuth() {
-      localStorage.removeItem(LS_KEY);
-    }
+    function saveSession(s) { localStorage.setItem(LS_KEY, JSON.stringify(s)); }
+    function clearSession() { localStorage.removeItem(LS_KEY); }
 
     // ══════════════════════════════════════════════════════════════════
-    // GITHUB API
+    // CONTENT I/O
     // ══════════════════════════════════════════════════════════════════
-    async function ghFetch(path, options = {}) {
-      const res = await fetch(`${API}${path}`, {
-        ...options,
-        headers: {
-          'Accept': 'application/vnd.github+json',
-          'Authorization': `Bearer ${state.auth.token}`,
-          'X-GitHub-Api-Version': '2022-11-28',
-          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-          ...(options.headers || {}),
-        },
-      });
-      if (!res.ok) {
-        let msg = `GitHub API error (${res.status})`;
-        try {
-          const body = await res.json();
-          if (body.message) msg = body.message;
-        } catch {}
-        throw new Error(msg);
-      }
-      return res.status === 204 ? null : res.json();
-    }
-
     async function fetchContent() {
-      const { repo, branch } = state.auth;
-      const data = await ghFetch(
-        `/repos/${repo}/contents/${FILE_PATH}?ref=${encodeURIComponent(branch)}`
-      );
-      state.sha = data.sha;
-      const json = JSON.parse(b64decode(data.content));
+      // Public file — no auth needed to read
+      const res = await fetch('/content.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error(`Could not load content.json (${res.status})`);
+      const json = await res.json();
       state.content = json;
       state.original = JSON.stringify(json);
       return json;
     }
 
-    async function commitContent(message) {
-      const { repo, branch } = state.auth;
-      const body = {
-        message: message || `Update landing page content (${new Date().toISOString()})`,
-        content: b64encode(JSON.stringify(state.content, null, 2) + '\n'),
-        branch,
-        sha: state.sha,
-      };
-      const res = await ghFetch(`/repos/${repo}/contents/${FILE_PATH}`, {
-        method: 'PUT',
-        body: JSON.stringify(body),
+    async function commitContent() {
+      const res = await fetch('/api/save', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          token: state.session.token,
+          content: state.content,
+        }),
       });
-      state.sha = res.content.sha;
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (res.status === 401) {
+          clearSession();
+          state.session = null;
+          setTimeout(() => location.reload(), 1500);
+          throw new Error('Session expired. Redirecting to login…');
+        }
+        throw new Error(body.error || `Save failed (${res.status})`);
+      }
       state.original = JSON.stringify(state.content);
       updateDirtyUI();
+      return body;
     }
 
     // ══════════════════════════════════════════════════════════════════
@@ -1224,26 +1186,26 @@
     async function enterEditor() {
       document.getElementById('loginView').style.display = 'none';
       document.getElementById('editorView').style.display = 'grid';
-      document.getElementById('repoMeta').textContent = `${state.auth.repo} · ${state.auth.branch}`;
+      const sessionExpiry = new Date(state.session.expiresAt).toLocaleString();
+      document.getElementById('repoMeta').textContent = `Signed in as ${state.session.username || 'admin'}\nSession expires ${sessionExpiry}`;
 
-      showAlert('editorAlert', 'Loading content from GitHub…', 'success');
+      showAlert('editorAlert', 'Loading content…', 'success');
       try {
         await fetchContent();
         showAlert('editorAlert', '');
         bindFields();
         updateDirtyUI();
       } catch (err) {
-        showAlert('editorAlert', `Could not load content.json: ${err.message}`, 'error');
+        showAlert('editorAlert', err.message, 'error');
       }
     }
 
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const repo = document.getElementById('loginRepo').value.trim().replace(/^\/+|\/+$/g, '');
-      const branch = document.getElementById('loginBranch').value.trim() || 'main';
-      const token = document.getElementById('loginToken').value.trim();
-      if (!/^[^/]+\/[^/]+$/.test(repo)) {
-        showAlert('loginAlert', 'Repository must be in the form "owner/repo".');
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+      if (!username || !password) {
+        showAlert('loginAlert', 'Username and password are required.');
         return;
       }
 
@@ -1253,15 +1215,22 @@
       label.innerHTML = '<span class="loader"></span>';
       showAlert('loginAlert', '');
 
-      state.auth = { repo, branch, token };
       try {
-        // Verify token + repo access by fetching file metadata
-        await ghFetch(`/repos/${repo}/contents/${FILE_PATH}?ref=${encodeURIComponent(branch)}`);
-        saveAuth(state.auth);
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(body.error || `Sign-in failed (${res.status})`);
+        }
+        state.session = { token: body.token, expiresAt: body.expiresAt, username };
+        saveSession(state.session);
         await enterEditor();
       } catch (err) {
-        state.auth = null;
-        showAlert('loginAlert', `Sign-in failed: ${err.message}`);
+        state.session = null;
+        showAlert('loginAlert', err.message);
       } finally {
         btn.disabled = false;
         label.textContent = 'Sign In';
@@ -1270,12 +1239,12 @@
 
     document.getElementById('logoutBtn').addEventListener('click', () => {
       if (isDirty() && !confirm('Discard unsaved changes and sign out?')) return;
-      clearAuth();
+      clearSession();
       location.reload();
     });
 
     document.getElementById('reloadBtn').addEventListener('click', async () => {
-      if (isDirty() && !confirm('Discard unsaved changes and reload from GitHub?')) return;
+      if (isDirty() && !confirm('Discard unsaved changes and reload?')) return;
       showAlert('editorAlert', 'Reloading…', 'success');
       try {
         await fetchContent();
@@ -1322,9 +1291,9 @@
     // BOOT
     // ══════════════════════════════════════════════════════════════════
     (function boot() {
-      const auth = loadAuth();
-      if (auth && auth.token && auth.repo) {
-        state.auth = auth;
+      const session = loadSession();
+      if (session) {
+        state.session = session;
         enterEditor();
       }
     })();
