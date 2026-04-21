@@ -1,0 +1,105 @@
+{
+  "nav": {
+    "logo": "Merkuz",
+    "links": [
+      { "label": "Our Story", "href": "#story" },
+      { "label": "Services", "href": "#services" },
+      { "label": "Programs", "href": "#programs" }
+    ],
+    "ctaLabel": "Get in Touch",
+    "ctaHref": "#contact"
+  },
+  "hero": {
+    "label": "Whole-Person Healing",
+    "heading": "Holistic <em>Mental Health</em><br>and Wellness Center",
+    "subtitle": "Culturally oriented, language-specific access to care where family is the main source of support for individuals with mental illness.",
+    "amharic": "ምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል — በባህል ላይ ያተኮረ፣ የአዕምሮ ህመም ላለባቸው ግለሰቦች ዋናው የድጋፍ ምንጭ ቤተሰብ የሆነበት ቋንቋ-ተኮር እንክብካቤ",
+    "primaryCtaLabel": "Explore Services",
+    "primaryCtaHref": "#services",
+    "secondaryCtaLabel": "Read Our Story",
+    "secondaryCtaHref": "#story",
+    "scrollHint": "Scroll",
+    "backgroundImage": ""
+  },
+  "story": {
+    "label": "Our Story",
+    "title": "Built from lived<br>experience, shaped<br>by compassion.",
+    "desc": "Merkuz was created to close the gap between mental health needs and culturally grounded support.",
+    "paragraphs": [
+      "Merkuz Holistic Mental Health and Wellness Center was founded through the lived experience of our founder, <strong>Menbere Abere</strong>, who spent over a decade as a caregiver for loved ones living with mental health conditions. Her personal journey ignited a deep commitment to support others — especially those from underrepresented communities — who are navigating similar challenges.",
+      "Located in the Greater Bay Area, Merkuz was created to serve individuals and families from East African backgrounds, including Ethiopian, Eritrean, and Somalian diaspora communities. Many of these families face unique barriers to mental health care due to cultural stigma, language differences, and a general distrust of health systems.",
+      "A 2022 study by the American Psychological Association highlighted that children and families who have experienced migration-related trauma often encounter significant obstacles in accessing mental health support. Merkuz was founded to help bridge that gap.",
+      "We offer culturally sensitive, language-specific services that recognize the central role of family and community in healing. Our work addresses issues related to mental health, substance use, and emotional well-being — with a particular focus on helping immigrant communities adjust to life in the U.S. We understand the emotional and psychological challenges that come with resettlement and aim to provide the support and tools needed not just to survive, but to thrive."
+    ],
+    "quote": "At Merkuz, we walk alongside our clients as they begin a new chapter — grounded in culture, supported by family, and empowered to heal.",
+    "amharicTitle": "የእኛ ታሪክ",
+    "amharicParagraphs": [
+      "የምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል የተመሰረተው የመስራቻችንን ከ10 አመት በላይ የአዕምሮ ጤና ችግር ላለባቸው የቅርብ ቤተሰቦች አስታማሚ እና ረዳት በመሆን ባሳለፉት በግል ጉዞ ምክንያት ያገኙትን ልምድ መሰረት በማድረግ ያገኙትን ልምድ ለሌሎች ለማካፈል ነው።",
+      "ማእከሉ የተወለደው በካሊፎረኒያ ግዛት በሳንታ ክላራ ካውንቲ ውስጥ ከአእምሮ ህመም ሁኔታዎች ጋር ለሚታገሉ በተለይም ከምስራቅ አፍሪካ (ኢትዮጵያውያን፣ ኤርትራዊ፣ ሶማሊያውያን፣ ወዘተ) ብዙ ግለሰቦች ለመርዳት ካለው ራዕይ ነው።",
+      "በ2022 የአሜሪካ የሥነ ልቦና ማኅበር ባደረገው ጥናት፣ በዩናይትድ ስቴትስ የሚኖሩ ሕፃናትና ቤተሰቦች ከስደት ጋር ተያይዞ ጉዳት የደረሰባቸው ሕፃናትና ቤተሰቦች ለጉዳት የሚያጋልጡ እንቅፋቶችን አግኝተዋል። ምርኩዝ ይህንን ክፍተት ለማስተካከል እና የማህበረሰቡ አባላት የአእምሮ ጤናን፣ የአደንዛዥ እፅን አላግባብ መጠቀምን እና ስሜታዊ ደህንነትን ለመፍታት እንሰራለን።",
+      "ተልእኳችን ወገኖቻችን አዲስ ጉዞ ሲጀምሩ ከአዲሱ ሃገራቸው እንዲሁም ከአካባቢያቸው ግር በተሻለ ሁኔታ እንዲግባቡና እና እንዲያድጉ ነው።"
+    ]
+  },
+  "banner": {
+    "heading": "Merkuz Is Your Partner in<br>Mental Health and Wellness",
+    "amharic": "ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው።"
+  },
+  "services": {
+    "label": "Our Services",
+    "title": "Simple ways to begin,<br>connect, and heal.",
+    "desc": "Whether you need guidance, community, or shared support, Merkuz offers welcoming entry points into care.",
+    "cards": [
+      {
+        "number": "01",
+        "title": "Counselling Sessions",
+        "en": "If you're not sure which program fits you, joining one of our Counseling Sessions is a great place to start. Whatever you decide, keep in mind that you can always try other options until you find the right fit for you.",
+        "am": "የትኛው ፕሮግራም ለእርስዎ እንደሚስማማ እርግጠኛ ካልሆኑ፣ የእኛን የምክር ክፍለ ጊዜ መቀላቀል ለመጀመር ጥሩ ቦታ ነው። ለእርስዎ የሚስማማዎትን እስኪያገኙ ድረስ ሁልጊዜ ሌሎች አማራጮችን መሞከር እንደሚችሉ ያስታውሱ.",
+        "image": ""
+      },
+      {
+        "number": "02",
+        "title": "Community Forums",
+        "en": "Community Forums are a great option for all kinds of individuals, but it all depends on what you're comfortable with. Our only goal is to make you feel safe and supported, so don't hesitate to reach out with any questions.",
+        "am": "የማህበረሰብ መድረኮች ለሁሉም አይነት ግለሰቦች ምርጥ አማራጭ ናቸው፣ ነገር ግን ሁሉም እርስዎ በሚመቹዎት ላይ የተመሰረተ ነው። ደህንነት እንዲሰማዎት እና እንዲደገፉ ማድረግ ነው ብቸኛ አላማችን።",
+        "image": ""
+      },
+      {
+        "number": "03",
+        "title": "Peer-to-Peer Groups",
+        "en": "Our Peer-to-Peer Groups provide the kind of comprehensive support you seek as you navigate your challenges. We want you to feel comfortable and at ease, so let us know what's on your mind.",
+        "am": "የምርኩዝ ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።",
+        "image": ""
+      }
+    ]
+  },
+  "programs": {
+    "label": "Programs",
+    "title": "Holistic support,<br>delivered with care.",
+    "desc": "Programs designed to support emotional well-being, learning, community connection, and advocacy.",
+    "items": [
+      "Secular and Religious Counseling",
+      "Training and Education",
+      "Outreach and Community Engagement",
+      "Advocacy"
+    ],
+    "amharicTitle": "የምርኩዝ የአእምሮ ጤና እና ደህንነት ማእከል",
+    "amharicParagraphs": [
+      "ይህ የአእምሮ ጤና ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።",
+      "የእኛ አባላት ለግል እድገት፣ ራስን ለማንፀባረቅ፣ ለመማር እና ለመተሳሰር እና ቦታ ይሰጣሉ። ለበለጠ መረጃ ጋብዘናቹህ እንደምትቀላቀሉን ተስፋ እናደርጋለን!"
+    ]
+  },
+  "contact": {
+    "label": "Get in Touch",
+    "title": "Whole-Person Healing<br>Starts Here",
+    "desc": "We're here to support you and your family. Reach out to learn more about our services or to begin your healing journey.",
+    "phone": "669-292-9038",
+    "email": "hello@merkuzcenter.com",
+    "handle": "@merkuzcenter",
+    "rightCardTitle": "ሙሉ ሰው ፈውስ",
+    "rightCardDesc": "ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው። ለበለጠ መረጃ ያግኙን።",
+    "rightCardCtaLabel": "Contact Us",
+    "rightCardCtaHref": "mailto:hello@merkuzcenter.com",
+    "footerLeft": "© 2026 Merkuz Holistic Mental Health and Wellness Center",
+    "footerRight": "Greater Bay Area, California"
+  }
+}

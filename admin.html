@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Merkuz — Admin Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --olive: #4A5D4B;
+      --olive-light: #6B7F6C;
+      --forest: #2F3E30;
+      --cream: #F9F6F1;
+      --cream-warm: #F3EDE3;
+      --linen: #EDE7DB;
+      --clay: #C4A882;
+      --clay-light: #D9C9AD;
+      --text: #2A2A28;
+      --text-soft: #5E5C56;
+      --text-faint: #8A877F;
+      --white: #FFFFFF;
+      --divider: rgba(74, 93, 75, 0.1);
+      --danger: #B04848;
+      --success: #4A7A50;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      font-weight: 300;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .serif { font-family: 'Cormorant Garamond', serif; }
+
+    /* ── LOGIN ── */
+    .login-wrap {
+      min-height: 100vh;
+      display: grid; place-items: center;
+      padding: 40px 20px;
+      background: linear-gradient(175deg, var(--cream), var(--cream-warm));
+    }
+    .login-card {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 48px 40px;
+      max-width: 460px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(47, 62, 48, 0.08);
+      border: 1px solid var(--divider);
+    }
+    .login-card h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 500;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+    .login-card .sub {
+      font-size: 0.92rem;
+      color: var(--text-soft);
+      margin-bottom: 32px;
+    }
+    .field {
+      margin-bottom: 20px;
+    }
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .field .hint {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="email"],
+    input[type="url"],
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--divider);
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      background: var(--cream);
+      color: var(--text);
+      font-weight: 400;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      outline: none;
+      border-color: var(--olive-light);
+      background: var(--white);
+    }
+    textarea {
+      min-height: 100px;
+      line-height: 1.7;
+      resize: vertical;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-family: inherit;
+      font-size: 0.88rem; font-weight: 500;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: var(--olive);
+      color: var(--cream);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: var(--forest);
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1px solid var(--clay-light);
+      color: var(--text-soft);
+    }
+    .btn-ghost:hover:not(:disabled) {
+      border-color: var(--olive-light);
+      color: var(--olive);
+    }
+    .btn-danger {
+      background: transparent;
+      border: 1px solid rgba(176, 72, 72, 0.3);
+      color: var(--danger);
+    }
+    .btn-danger:hover:not(:disabled) {
+      background: rgba(176, 72, 72, 0.06);
+    }
+    .btn-full {
+      width: 100%;
+    }
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.82rem;
+    }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      margin-bottom: 20px;
+    }
+    .alert-error {
+      background: rgba(176, 72, 72, 0.08);
+      color: var(--danger);
+      border: 1px solid rgba(176, 72, 72, 0.2);
+    }
+    .alert-success {
+      background: rgba(74, 122, 80, 0.08);
+      color: var(--success);
+      border: 1px solid rgba(74, 122, 80, 0.2);
+    }
+
+    /* ── EDITOR ── */
+    .editor-wrap {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+    .sidebar {
+      background: var(--forest);
+      color: var(--cream);
+      padding: 32px 24px;
+      position: sticky; top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.4rem; font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream);
+      margin-bottom: 4px;
+    }
+    .sidebar-sub {
+      font-size: 0.76rem;
+      color: rgba(249, 246, 241, 0.5);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 36px;
+    }
+    .nav-list {
+      display: grid;
+      gap: 2px;
+    }
+    .nav-btn {
+      display: block;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem; font-weight: 400;
+      color: rgba(249, 246, 241, 0.7);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .nav-btn:hover { background: rgba(249, 246, 241, 0.05); color: var(--cream); }
+    .nav-btn.active {
+      background: rgba(196, 168, 130, 0.12);
+      color: var(--clay-light);
+    }
+    .sidebar-footer {
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(249, 246, 241, 0.08);
+      display: grid;
+      gap: 8px;
+    }
+    .sidebar-meta {
+      font-size: 0.72rem;
+      color: rgba(249, 246, 241, 0.4);
+      margin-bottom: 12px;
+      word-break: break-all;
+    }
+
+    .main {
+      padding: 40px 48px 120px;
+      max-width: 920px;
+    }
+    .main-header {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--divider);
+    }
+    .main-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem; font-weight: 500;
+      color: var(--forest);
+    }
+    .main-desc {
+      margin-top: 4px;
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+    .main-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .section-group {
+      display: none;
+    }
+    .section-group.active { display: block; }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--divider);
+      border-radius: 14px;
+      padding: 24px 28px;
+      margin-bottom: 20px;
+    }
+    .card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem; font-weight: 500;
+      color: var(--forest);
+      margin-bottom: 4px;
+    }
+    .card .card-sub {
+      font-size: 0.82rem;
+      color: var(--text-faint);
+      margin-bottom: 20px;
+    }
+    .row-between {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px; gap: 16px;
+    }
+
+    .list-item {
+      background: var(--cream);
+      border: 1px solid var(--divider);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .list-item-head {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .list-item-label {
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--olive);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .item-controls {
+      display: flex; gap: 4px;
+    }
+    .icon-btn {
+      width: 28px; height: 28px;
+      display: grid; place-items: center;
+      background: transparent;
+      border: 1px solid var(--divider);
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--text-soft);
+      font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover:not(:disabled) {
+      background: var(--white);
+      color: var(--olive);
+      border-color: var(--olive-light);
+    }
+    .icon-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .icon-btn-danger:hover:not(:disabled) {
+      color: var(--danger);
+      border-color: rgba(176, 72, 72, 0.3);
+    }
+
+    .save-bar {
+      position: fixed;
+      bottom: 0; left: 280px; right: 0;
+      background: rgba(249, 246, 241, 0.95);
+      backdrop-filter: blur(16px);
+      border-top: 1px solid var(--divider);
+      padding: 16px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px;
+      z-index: 10;
+    }
+    .save-bar.hidden { display: none; }
+    .save-status {
+      font-size: 0.88rem;
+      color: var(--text-soft);
+    }
+    .save-status.dirty { color: var(--clay); }
+
+    .loader {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: var(--cream);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .image-preview {
+      margin-top: 10px;
+      max-width: 200px;
+      max-height: 120px;
+      border-radius: 8px;
+      object-fit: cover;
+      display: none;
+      border: 1px solid var(--divider);
+    }
+    .image-preview.visible { display: block; }
+
+    .diff-hint {
+      background: var(--cream-warm);
+      border: 1px dashed var(--clay-light);
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 800px) {
+      .editor-wrap { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+      .main { padding: 24px 20px 160px; }
+      .save-bar { left: 0; padding: 14px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── LOGIN VIEW ── -->
+  <div id="loginView" class="login-wrap">
+    <div class="login-card">
+      <h1 class="serif">Merkuz Admin</h1>
+      <p class="sub">Sign in to edit the landing page.</p>
+
+      <div id="loginAlert"></div>
+
+      <form id="loginForm">
+        <div class="field">
+          <label>GitHub Repository</label>
+          <input type="text" id="loginRepo" placeholder="owner/repo" value="atsebabi/Merkuz-" required>
+          <div class="hint">The repo where content.json is committed.</div>
+        </div>
+        <div class="field">
+          <label>Branch</label>
+          <input type="text" id="loginBranch" value="main" required>
+        </div>
+        <div class="field">
+          <label>Personal Access Token</label>
+          <input type="password" id="loginToken" placeholder="github_pat_..." required autocomplete="off">
+          <div class="hint">
+            Fine-grained token with <strong>Contents: Read & Write</strong> permission for this repo.
+            <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--olive);">Create one →</a>
+            Stored only in your browser.
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" id="loginBtn">
+          <span id="loginBtnLabel">Sign In</span>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ── EDITOR VIEW ── -->
+  <div id="editorView" class="editor-wrap" style="display:none;">
+    <aside class="sidebar">
+      <div class="sidebar-logo">Merkuz</div>
+      <div class="sidebar-sub">Admin Portal</div>
+
+      <div class="nav-list" id="sectionNav">
+        <button class="nav-btn active" data-section="nav">Navigation</button>
+        <button class="nav-btn" data-section="hero">Hero</button>
+        <button class="nav-btn" data-section="story">Our Story</button>
+        <button class="nav-btn" data-section="banner">Banner</button>
+        <button class="nav-btn" data-section="services">Services</button>
+        <button class="nav-btn" data-section="programs">Programs</button>
+        <button class="nav-btn" data-section="contact">Contact & Footer</button>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-meta" id="repoMeta"></div>
+        <a href="index.html" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--clay-light);border-color:rgba(249,246,241,0.15);">View Site ↗</a>
+        <button class="btn btn-danger btn-sm" id="logoutBtn">Sign Out</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <div class="main-header">
+        <div>
+          <div class="main-title serif" id="sectionTitle">Navigation</div>
+          <div class="main-desc" id="sectionDesc">Top nav links and call-to-action.</div>
+        </div>
+        <div class="main-actions">
+          <button class="btn btn-ghost btn-sm" id="reloadBtn">Reload</button>
+        </div>
+      </div>
+
+      <div id="editorAlert"></div>
+
+      <div class="diff-hint">
+        Tip: For formatted text (like <code style="background:var(--linen);padding:1px 6px;border-radius:4px;">&lt;strong&gt;</code> bold or <code style="background:var(--linen);padding:1px 6px;border-radius:4px;">&lt;br&gt;</code> line breaks), you can use HTML tags directly in body/paragraph fields.
+      </div>
+
+      <!-- NAV -->
+      <div class="section-group active" data-section="nav">
+        <div class="card">
+          <h3>Logo</h3>
+          <div class="card-sub">Displayed in the top-left of the nav bar.</div>
+          <div class="field">
+            <label>Logo Text</label>
+            <input type="text" data-bind="nav.logo">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Nav Links</h3>
+          <div class="card-sub">Menu items shown in the top navigation.</div>
+          <div id="navLinksList"></div>
+          <button class="btn btn-ghost btn-sm" data-add="nav.links">+ Add Link</button>
+        </div>
+
+        <div class="card">
+          <h3>Call-to-Action Button</h3>
+          <div class="card-sub">The primary button in the nav bar.</div>
+          <div class="row-2">
+            <div class="field">
+              <label>Button Label</label>
+              <input type="text" data-bind="nav.ctaLabel">
+            </div>
+            <div class="field">
+              <label>Link (href)</label>
+              <input type="text" data-bind="nav.ctaHref">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO -->
+      <div class="section-group" data-section="hero">
+        <div class="card">
+          <h3>Hero Section</h3>
+          <div class="card-sub">The first section visitors see.</div>
+          <div class="field">
+            <label>Eyebrow / Small Label</label>
+            <input type="text" data-bind="hero.label">
+          </div>
+          <div class="field">
+            <label>Main Heading (HTML allowed)</label>
+            <textarea data-bind="hero.heading" rows="2"></textarea>
+            <div class="hint">Use <code>&lt;em&gt;word&lt;/em&gt;</code> for italicized highlights and <code>&lt;br&gt;</code> for line breaks.</div>
+          </div>
+          <div class="field">
+            <label>Subtitle</label>
+            <textarea data-bind="hero.subtitle" rows="3"></textarea>
+          </div>
+          <div class="field">
+            <label>Amharic Text</label>
+            <textarea data-bind="hero.amharic" rows="3"></textarea>
+          </div>
+          <div class="field">
+            <label>Scroll Hint Text</label>
+            <input type="text" data-bind="hero.scrollHint">
+          </div>
+          <div class="field">
+            <label>Hero Background Image URL (optional)</label>
+            <input type="url" data-bind="hero.backgroundImage" data-preview="heroBgPreview" placeholder="https://example.com/image.jpg">
+            <img id="heroBgPreview" class="image-preview" alt="">
+            <div class="hint">Leave blank to keep the default gradient background.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Primary CTA Button</h3>
+          <div class="row-2">
+            <div class="field">
+              <label>Button Label</label>
+              <input type="text" data-bind="hero.primaryCtaLabel">
+            </div>
+            <div class="field">
+              <label>Link (href)</label>
+              <input type="text" data-bind="hero.primaryCtaHref">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Secondary CTA Button</h3>
+          <div class="row-2">
+            <div class="field">
+              <label>Button Label</label>
+              <input type="text" data-bind="hero.secondaryCtaLabel">
+            </div>
+            <div class="field">
+              <label>Link (href)</label>
+              <input type="text" data-bind="hero.secondaryCtaHref">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STORY -->
+      <div class="section-group" data-section="story">
+        <div class="card">
+          <h3>Our Story — Header</h3>
+          <div class="field">
+            <label>Small Label</label>
+            <input type="text" data-bind="story.label">
+          </div>
+          <div class="field">
+            <label>Title (HTML allowed)</label>
+            <textarea data-bind="story.title" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label>Short Description</label>
+            <textarea data-bind="story.desc" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Story Paragraphs (English)</h3>
+          <div class="card-sub">Main body text. HTML tags like <code>&lt;strong&gt;</code> are supported.</div>
+          <div id="storyParagraphsList"></div>
+          <button class="btn btn-ghost btn-sm" data-add="story.paragraphs">+ Add Paragraph</button>
+        </div>
+
+        <div class="card">
+          <h3>Pull Quote</h3>
+          <div class="field">
+            <label>Quote Text</label>
+            <textarea data-bind="story.quote" rows="3"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Amharic Translation</h3>
+          <div class="field">
+            <label>Amharic Heading</label>
+            <input type="text" data-bind="story.amharicTitle">
+          </div>
+          <div id="storyAmharicList"></div>
+          <button class="btn btn-ghost btn-sm" data-add="story.amharicParagraphs">+ Add Paragraph</button>
+        </div>
+      </div>
+
+      <!-- BANNER -->
+      <div class="section-group" data-section="banner">
+        <div class="card">
+          <h3>Full-Width Banner</h3>
+          <div class="card-sub">The dark banner section between Story and Services.</div>
+          <div class="field">
+            <label>Heading (HTML allowed)</label>
+            <textarea data-bind="banner.heading" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label>Amharic Subtext</label>
+            <input type="text" data-bind="banner.amharic">
+          </div>
+        </div>
+      </div>
+
+      <!-- SERVICES -->
+      <div class="section-group" data-section="services">
+        <div class="card">
+          <h3>Services — Header</h3>
+          <div class="field">
+            <label>Small Label</label>
+            <input type="text" data-bind="services.label">
+          </div>
+          <div class="field">
+            <label>Title (HTML allowed)</label>
+            <textarea data-bind="services.title" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea data-bind="services.desc" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Service Cards</h3>
+          <div class="card-sub">Each card shown in the 3-column grid.</div>
+          <div id="servicesCardsList"></div>
+          <button class="btn btn-ghost btn-sm" data-add="services.cards">+ Add Service</button>
+        </div>
+      </div>
+
+      <!-- PROGRAMS -->
+      <div class="section-group" data-section="programs">
+        <div class="card">
+          <h3>Programs — Header</h3>
+          <div class="field">
+            <label>Small Label</label>
+            <input type="text" data-bind="programs.label">
+          </div>
+          <div class="field">
+            <label>Title (HTML allowed)</label>
+            <textarea data-bind="programs.title" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea data-bind="programs.desc" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Program List</h3>
+          <div class="card-sub">The bulleted items shown on the left.</div>
+          <div id="programsItemsList"></div>
+          <button class="btn btn-ghost btn-sm" data-add="programs.items">+ Add Program</button>
+        </div>
+
+        <div class="card">
+          <h3>Amharic Callout Card</h3>
+          <div class="field">
+            <label>Amharic Heading</label>
+            <input type="text" data-bind="programs.amharicTitle">
+          </div>
+          <div id="programsAmList"></div>
+          <button class="btn btn-ghost btn-sm" data-add="programs.amharicParagraphs">+ Add Paragraph</button>
+        </div>
+      </div>
+
+      <!-- CONTACT -->
+      <div class="section-group" data-section="contact">
+        <div class="card">
+          <h3>Contact — Header</h3>
+          <div class="field">
+            <label>Small Label</label>
+            <input type="text" data-bind="contact.label">
+          </div>
+          <div class="field">
+            <label>Title (HTML allowed)</label>
+            <textarea data-bind="contact.title" rows="2"></textarea>
+          </div>
+          <div class="field">
+            <label>Description</label>
+            <textarea data-bind="contact.desc" rows="2"></textarea>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Contact Details</h3>
+          <div class="field">
+            <label>Phone</label>
+            <input type="text" data-bind="contact.phone">
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" data-bind="contact.email">
+          </div>
+          <div class="field">
+            <label>Social Handle</label>
+            <input type="text" data-bind="contact.handle">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Contact — Amharic Card</h3>
+          <div class="field">
+            <label>Amharic Heading</label>
+            <input type="text" data-bind="contact.rightCardTitle">
+          </div>
+          <div class="field">
+            <label>Amharic Description</label>
+            <textarea data-bind="contact.rightCardDesc" rows="2"></textarea>
+          </div>
+          <div class="row-2">
+            <div class="field">
+              <label>CTA Button Label</label>
+              <input type="text" data-bind="contact.rightCardCtaLabel">
+            </div>
+            <div class="field">
+              <label>CTA Link (href)</label>
+              <input type="text" data-bind="contact.rightCardCtaHref">
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Footer</h3>
+          <div class="row-2">
+            <div class="field">
+              <label>Left Text (copyright)</label>
+              <input type="text" data-bind="contact.footerLeft">
+            </div>
+            <div class="field">
+              <label>Right Text (location)</label>
+              <input type="text" data-bind="contact.footerRight">
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- SAVE BAR -->
+    <div class="save-bar" id="saveBar">
+      <div class="save-status" id="saveStatus">All changes saved.</div>
+      <div style="display:flex;gap:10px;">
+        <button class="btn btn-ghost btn-sm" id="discardBtn">Discard Changes</button>
+        <button class="btn btn-primary" id="saveBtn">
+          <span id="saveBtnLabel">Publish Changes</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ══════════════════════════════════════════════════════════════════
+    // STATE
+    // ══════════════════════════════════════════════════════════════════
+    const state = {
+      auth: null,       // { repo, branch, token }
+      content: null,    // parsed JSON
+      original: null,   // JSON string (for dirty check)
+      sha: null,        // current file sha from GitHub
+      section: 'nav',
+    };
+
+    const LS_KEY = 'merkuz-admin-auth';
+    const API = 'https://api.github.com';
+    const FILE_PATH = 'content.json';
+
+    // ══════════════════════════════════════════════════════════════════
+    // UTILITIES
+    // ══════════════════════════════════════════════════════════════════
+    function getPath(obj, path) {
+      return path.split('.').reduce((o, k) => o == null ? undefined : o[k], obj);
+    }
+    function setPath(obj, path, value) {
+      const keys = path.split('.');
+      const last = keys.pop();
+      const parent = keys.reduce((o, k) => (o[k] = o[k] || {}), obj);
+      parent[last] = value;
+    }
+
+    // UTF-8 safe base64 (GitHub contents API is base64-encoded)
+    function b64encode(str) {
+      return btoa(unescape(encodeURIComponent(str)));
+    }
+    function b64decode(str) {
+      return decodeURIComponent(escape(atob(str.replace(/\n/g, ''))));
+    }
+
+    function showAlert(elId, msg, type = 'error') {
+      const el = document.getElementById(elId);
+      if (!msg) { el.innerHTML = ''; return; }
+      el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+    }
+
+    function isDirty() {
+      return state.content && JSON.stringify(state.content) !== state.original;
+    }
+    function updateDirtyUI() {
+      const status = document.getElementById('saveStatus');
+      const saveBtn = document.getElementById('saveBtn');
+      if (isDirty()) {
+        status.textContent = 'You have unsaved changes.';
+        status.classList.add('dirty');
+        saveBtn.disabled = false;
+      } else {
+        status.textContent = 'All changes saved.';
+        status.classList.remove('dirty');
+        saveBtn.disabled = true;
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // AUTH
+    // ══════════════════════════════════════════════════════════════════
+    function loadAuth() {
+      try {
+        const raw = localStorage.getItem(LS_KEY);
+        if (!raw) return null;
+        return JSON.parse(raw);
+      } catch { return null; }
+    }
+    function saveAuth(auth) {
+      localStorage.setItem(LS_KEY, JSON.stringify(auth));
+    }
+    function clearAuth() {
+      localStorage.removeItem(LS_KEY);
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // GITHUB API
+    // ══════════════════════════════════════════════════════════════════
+    async function ghFetch(path, options = {}) {
+      const res = await fetch(`${API}${path}`, {
+        ...options,
+        headers: {
+          'Accept': 'application/vnd.github+json',
+          'Authorization': `Bearer ${state.auth.token}`,
+          'X-GitHub-Api-Version': '2022-11-28',
+          ...(options.body ? { 'Content-Type': 'application/json' } : {}),
+          ...(options.headers || {}),
+        },
+      });
+      if (!res.ok) {
+        let msg = `GitHub API error (${res.status})`;
+        try {
+          const body = await res.json();
+          if (body.message) msg = body.message;
+        } catch {}
+        throw new Error(msg);
+      }
+      return res.status === 204 ? null : res.json();
+    }
+
+    async function fetchContent() {
+      const { repo, branch } = state.auth;
+      const data = await ghFetch(
+        `/repos/${repo}/contents/${FILE_PATH}?ref=${encodeURIComponent(branch)}`
+      );
+      state.sha = data.sha;
+      const json = JSON.parse(b64decode(data.content));
+      state.content = json;
+      state.original = JSON.stringify(json);
+      return json;
+    }
+
+    async function commitContent(message) {
+      const { repo, branch } = state.auth;
+      const body = {
+        message: message || `Update landing page content (${new Date().toISOString()})`,
+        content: b64encode(JSON.stringify(state.content, null, 2) + '\n'),
+        branch,
+        sha: state.sha,
+      };
+      const res = await ghFetch(`/repos/${repo}/contents/${FILE_PATH}`, {
+        method: 'PUT',
+        body: JSON.stringify(body),
+      });
+      state.sha = res.content.sha;
+      state.original = JSON.stringify(state.content);
+      updateDirtyUI();
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // FORM RENDERING
+    // ══════════════════════════════════════════════════════════════════
+    function bindFields() {
+      // Simple scalar fields
+      document.querySelectorAll('[data-bind]').forEach(el => {
+        const path = el.dataset.bind;
+        const val = getPath(state.content, path);
+        el.value = val == null ? '' : String(val);
+        el.oninput = () => {
+          setPath(state.content, path, el.value);
+          updateDirtyUI();
+          // Image preview
+          const previewId = el.dataset.preview;
+          if (previewId) updateImagePreview(previewId, el.value);
+        };
+        // Init preview
+        if (el.dataset.preview) updateImagePreview(el.dataset.preview, el.value);
+      });
+
+      renderNavLinks();
+      renderStoryParagraphs();
+      renderStoryAmharic();
+      renderServiceCards();
+      renderProgramItems();
+      renderProgramsAm();
+    }
+
+    function updateImagePreview(id, url) {
+      const img = document.getElementById(id);
+      if (!img) return;
+      if (url && /^https?:\/\//.test(url)) {
+        img.src = url;
+        img.classList.add('visible');
+      } else {
+        img.classList.remove('visible');
+        img.removeAttribute('src');
+      }
+    }
+
+    function renderList(containerId, items, renderItem) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      items.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+        div.innerHTML = renderItem(item, i, items.length);
+        container.appendChild(div);
+      });
+    }
+
+    function renderNavLinks() {
+      const items = state.content.nav.links || [];
+      renderList('navLinksList', items, (item, i, total) => `
+        <div class="list-item-head">
+          <span class="list-item-label">Link ${i + 1}</span>
+          <div class="item-controls">
+            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="nav.links" data-idx="${i}" title="Move up">↑</button>
+            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="nav.links" data-idx="${i}" title="Move down">↓</button>
+            <button class="icon-btn icon-btn-danger" data-remove="nav.links" data-idx="${i}" title="Remove">×</button>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Label</label>
+            <input type="text" data-list-bind="nav.links.${i}.label" value="${escapeAttr(item.label || '')}">
+          </div>
+          <div class="field">
+            <label>Link (href)</label>
+            <input type="text" data-list-bind="nav.links.${i}.href" value="${escapeAttr(item.href || '')}">
+          </div>
+        </div>
+      `);
+      bindListItems();
+    }
+
+    function renderStoryParagraphs() {
+      const items = state.content.story.paragraphs || [];
+      renderList('storyParagraphsList', items, (item, i, total) => `
+        <div class="list-item-head">
+          <span class="list-item-label">Paragraph ${i + 1}</span>
+          <div class="item-controls">
+            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="story.paragraphs" data-idx="${i}">↑</button>
+            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="story.paragraphs" data-idx="${i}">↓</button>
+            <button class="icon-btn icon-btn-danger" data-remove="story.paragraphs" data-idx="${i}">×</button>
+          </div>
+        </div>
+        <div class="field">
+          <textarea data-list-bind="story.paragraphs.${i}" rows="4">${escapeHtml(item)}</textarea>
+        </div>
+      `);
+      bindListItems();
+    }
+
+    function renderStoryAmharic() {
+      const items = state.content.story.amharicParagraphs || [];
+      renderList('storyAmharicList', items, (item, i, total) => `
+        <div class="list-item-head">
+          <span class="list-item-label">Amharic Paragraph ${i + 1}</span>
+          <div class="item-controls">
+            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="story.amharicParagraphs" data-idx="${i}">↑</button>
+            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="story.amharicParagraphs" data-idx="${i}">↓</button>
+            <button class="icon-btn icon-btn-danger" data-remove="story.amharicParagraphs" data-idx="${i}">×</button>
+          </div>
+        </div>
+        <div class="field">
+          <textarea data-list-bind="story.amharicParagraphs.${i}" rows="4">${escapeHtml(item)}</textarea>
+        </div>
+      `);
+      bindListItems();
+    }
+
+    function renderServiceCards() {
+      const items = state.content.services.cards || [];
+      renderList('servicesCardsList', items, (item, i, total) => `
+        <div class="list-item-head">
+          <span class="list-item-label">Service ${i + 1}</span>
+          <div class="item-controls">
+            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="services.cards" data-idx="${i}">↑</button>
+            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="services.cards" data-idx="${i}">↓</button>
+            <button class="icon-btn icon-btn-danger" data-remove="services.cards" data-idx="${i}">×</button>
+          </div>
+        </div>
+        <div class="row-2">
+          <div class="field">
+            <label>Number</label>
+            <input type="text" data-list-bind="services.cards.${i}.number" value="${escapeAttr(item.number || '')}">
+          </div>
+          <div class="field">
+            <label>Title</label>
+            <input type="text" data-list-bind="services.cards.${i}.title" value="${escapeAttr(item.title || '')}">
+          </div>
+        </div>
+        <div class="field">
+          <label>English Body</label>
+          <textarea data-list-bind="services.cards.${i}.en" rows="3">${escapeHtml(item.en || '')}</textarea>
+        </div>
+        <div class="field">
+          <label>Amharic Body</label>
+          <textarea data-list-bind="services.cards.${i}.am" rows="3">${escapeHtml(item.am || '')}</textarea>
+        </div>
+        <div class="field">
+          <label>Image URL (optional)</label>
+          <input type="url" data-list-bind="services.cards.${i}.image" data-preview="svcImg${i}" value="${escapeAttr(item.image || '')}" placeholder="https://...">
+          <img id="svcImg${i}" class="image-preview" alt="">
+        </div>
+      `);
+      bindListItems();
+      // init previews
+      items.forEach((it, i) => updateImagePreview('svcImg' + i, it.image || ''));
+    }
+
+    function renderProgramItems() {
+      const items = state.content.programs.items || [];
+      renderList('programsItemsList', items, (item, i, total) => `
+        <div class="list-item-head">
+          <span class="list-item-label">Program ${i + 1}</span>
+          <div class="item-controls">
+            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="programs.items" data-idx="${i}">↑</button>
+            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="programs.items" data-idx="${i}">↓</button>
+            <button class="icon-btn icon-btn-danger" data-remove="programs.items" data-idx="${i}">×</button>
+          </div>
+        </div>
+        <div class="field">
+          <input type="text" data-list-bind="programs.items.${i}" value="${escapeAttr(item)}">
+        </div>
+      `);
+      bindListItems();
+    }
+
+    function renderProgramsAm() {
+      const items = state.content.programs.amharicParagraphs || [];
+      renderList('programsAmList', items, (item, i, total) => `
+        <div class="list-item-head">
+          <span class="list-item-label">Amharic Paragraph ${i + 1}</span>
+          <div class="item-controls">
+            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="programs.amharicParagraphs" data-idx="${i}">↑</button>
+            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="programs.amharicParagraphs" data-idx="${i}">↓</button>
+            <button class="icon-btn icon-btn-danger" data-remove="programs.amharicParagraphs" data-idx="${i}">×</button>
+          </div>
+        </div>
+        <div class="field">
+          <textarea data-list-bind="programs.amharicParagraphs.${i}" rows="3">${escapeHtml(item)}</textarea>
+        </div>
+      `);
+      bindListItems();
+    }
+
+    function bindListItems() {
+      document.querySelectorAll('[data-list-bind]').forEach(el => {
+        const path = el.dataset.listBind;
+        el.oninput = () => {
+          setPath(state.content, path, el.value);
+          updateDirtyUI();
+          const previewId = el.dataset.preview;
+          if (previewId) updateImagePreview(previewId, el.value);
+        };
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+    function escapeAttr(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    // LIST ACTIONS (add / remove / reorder)
+    // ══════════════════════════════════════════════════════════════════
+    const DEFAULTS = {
+      'nav.links': () => ({ label: 'New Link', href: '#' }),
+      'story.paragraphs': () => 'New paragraph text.',
+      'story.amharicParagraphs': () => 'አዲስ አንቀጽ',
+      'services.cards': () => ({ number: '04', title: 'New Service', en: '', am: '', image: '' }),
+      'programs.items': () => 'New program',
+      'programs.amharicParagraphs': () => 'አዲስ አንቀጽ',
+    };
+
+    function rerenderForList(path) {
+      const map = {
+        'nav.links': renderNavLinks,
+        'story.paragraphs': renderStoryParagraphs,
+        'story.amharicParagraphs': renderStoryAmharic,
+        'services.cards': renderServiceCards,
+        'programs.items': renderProgramItems,
+        'programs.amharicParagraphs': renderProgramsAm,
+      };
+      (map[path] || (() => {}))();
+    }
+
+    document.addEventListener('click', (e) => {
+      const add = e.target.closest('[data-add]');
+      if (add) {
+        const path = add.dataset.add;
+        const arr = getPath(state.content, path) || [];
+        arr.push(DEFAULTS[path]());
+        setPath(state.content, path, arr);
+        rerenderForList(path);
+        updateDirtyUI();
+        return;
+      }
+      const remove = e.target.closest('[data-remove]');
+      if (remove) {
+        if (!confirm('Remove this item?')) return;
+        const path = remove.dataset.remove;
+        const idx = parseInt(remove.dataset.idx, 10);
+        const arr = getPath(state.content, path);
+        arr.splice(idx, 1);
+        rerenderForList(path);
+        updateDirtyUI();
+        return;
+      }
+      const up = e.target.closest('[data-move-up]');
+      if (up) {
+        const path = up.dataset.moveUp;
+        const idx = parseInt(up.dataset.idx, 10);
+        const arr = getPath(state.content, path);
+        if (idx > 0) [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+        rerenderForList(path);
+        updateDirtyUI();
+        return;
+      }
+      const down = e.target.closest('[data-move-down]');
+      if (down) {
+        const path = down.dataset.moveDown;
+        const idx = parseInt(down.dataset.idx, 10);
+        const arr = getPath(state.content, path);
+        if (idx < arr.length - 1) [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
+        rerenderForList(path);
+        updateDirtyUI();
+        return;
+      }
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // SECTION NAV
+    // ══════════════════════════════════════════════════════════════════
+    const SECTION_META = {
+      nav: { title: 'Navigation', desc: 'Top nav links and call-to-action.' },
+      hero: { title: 'Hero Section', desc: 'The first thing visitors see.' },
+      story: { title: 'Our Story', desc: 'Founding story, paragraphs, and Amharic translation.' },
+      banner: { title: 'Banner', desc: 'Dark-background full-width banner.' },
+      services: { title: 'Services', desc: 'The three service cards.' },
+      programs: { title: 'Programs', desc: 'Program list and Amharic callout card.' },
+      contact: { title: 'Contact & Footer', desc: 'Contact info, Amharic card, and footer.' },
+    };
+
+    function switchSection(name) {
+      state.section = name;
+      document.querySelectorAll('.nav-btn').forEach(b => {
+        b.classList.toggle('active', b.dataset.section === name);
+      });
+      document.querySelectorAll('.section-group').forEach(g => {
+        g.classList.toggle('active', g.dataset.section === name);
+      });
+      const meta = SECTION_META[name];
+      document.getElementById('sectionTitle').textContent = meta.title;
+      document.getElementById('sectionDesc').textContent = meta.desc;
+      window.scrollTo(0, 0);
+    }
+
+    document.getElementById('sectionNav').addEventListener('click', (e) => {
+      const btn = e.target.closest('.nav-btn');
+      if (btn) switchSection(btn.dataset.section);
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // LOGIN / INIT
+    // ══════════════════════════════════════════════════════════════════
+    async function enterEditor() {
+      document.getElementById('loginView').style.display = 'none';
+      document.getElementById('editorView').style.display = 'grid';
+      document.getElementById('repoMeta').textContent = `${state.auth.repo} · ${state.auth.branch}`;
+
+      showAlert('editorAlert', 'Loading content from GitHub…', 'success');
+      try {
+        await fetchContent();
+        showAlert('editorAlert', '');
+        bindFields();
+        updateDirtyUI();
+      } catch (err) {
+        showAlert('editorAlert', `Could not load content.json: ${err.message}`, 'error');
+      }
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const repo = document.getElementById('loginRepo').value.trim().replace(/^\/+|\/+$/g, '');
+      const branch = document.getElementById('loginBranch').value.trim() || 'main';
+      const token = document.getElementById('loginToken').value.trim();
+      if (!/^[^/]+\/[^/]+$/.test(repo)) {
+        showAlert('loginAlert', 'Repository must be in the form "owner/repo".');
+        return;
+      }
+
+      const btn = document.getElementById('loginBtn');
+      const label = document.getElementById('loginBtnLabel');
+      btn.disabled = true;
+      label.innerHTML = '<span class="loader"></span>';
+      showAlert('loginAlert', '');
+
+      state.auth = { repo, branch, token };
+      try {
+        // Verify token + repo access by fetching file metadata
+        await ghFetch(`/repos/${repo}/contents/${FILE_PATH}?ref=${encodeURIComponent(branch)}`);
+        saveAuth(state.auth);
+        await enterEditor();
+      } catch (err) {
+        state.auth = null;
+        showAlert('loginAlert', `Sign-in failed: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        label.textContent = 'Sign In';
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+      if (isDirty() && !confirm('Discard unsaved changes and sign out?')) return;
+      clearAuth();
+      location.reload();
+    });
+
+    document.getElementById('reloadBtn').addEventListener('click', async () => {
+      if (isDirty() && !confirm('Discard unsaved changes and reload from GitHub?')) return;
+      showAlert('editorAlert', 'Reloading…', 'success');
+      try {
+        await fetchContent();
+        showAlert('editorAlert', '');
+        bindFields();
+        updateDirtyUI();
+      } catch (err) {
+        showAlert('editorAlert', err.message);
+      }
+    });
+
+    document.getElementById('discardBtn').addEventListener('click', () => {
+      if (!confirm('Discard all unsaved changes?')) return;
+      state.content = JSON.parse(state.original);
+      bindFields();
+      updateDirtyUI();
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      const btn = document.getElementById('saveBtn');
+      const label = document.getElementById('saveBtnLabel');
+      btn.disabled = true;
+      label.innerHTML = '<span class="loader"></span>';
+      showAlert('editorAlert', '');
+      try {
+        await commitContent();
+        showAlert('editorAlert', 'Published! Vercel will redeploy in ~30s.', 'success');
+        setTimeout(() => showAlert('editorAlert', ''), 6000);
+      } catch (err) {
+        showAlert('editorAlert', `Save failed: ${err.message}`);
+      } finally {
+        btn.disabled = false;
+        label.textContent = 'Publish Changes';
+        updateDirtyUI();
+      }
+    });
+
+    // Warn on leave if dirty
+    window.addEventListener('beforeunload', (e) => {
+      if (isDirty()) { e.preventDefault(); e.returnValue = ''; }
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    // BOOT
+    // ══════════════════════════════════════════════════════════════════
+    (function boot() {
+      const auth = loadAuth();
+      if (auth && auth.token && auth.repo) {
+        state.auth = auth;
+        enterEditor();
+      }
+    })();
+  </script>
+</body>
+</html>

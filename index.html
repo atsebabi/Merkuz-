@@ -624,12 +624,12 @@
   <!-- NAV -->
   <nav id="navbar">
     <div class="nav-inner">
-      <a href="#" class="logo">Merkuz</a>
+      <a href="#" class="logo" data-edit="nav.logo">Merkuz</a>
       <div class="nav-links" id="navLinks">
-        <a href="#story">Our Story</a>
-        <a href="#services">Services</a>
-        <a href="#programs">Programs</a>
-        <a href="#contact" class="nav-cta">Get in Touch</a>
+        <a href="#story" data-edit="nav.links.0.label" data-href="nav.links.0.href">Our Story</a>
+        <a href="#services" data-edit="nav.links.1.label" data-href="nav.links.1.href">Services</a>
+        <a href="#programs" data-edit="nav.links.2.label" data-href="nav.links.2.href">Programs</a>
+        <a href="#contact" class="nav-cta" data-edit="nav.ctaLabel" data-href="nav.ctaHref">Get in Touch</a>
       </div>
       <button class="menu-toggle" id="menuToggle" aria-label="Menu">
         <span></span><span></span><span></span>
@@ -638,28 +638,28 @@
   </nav>
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" id="heroSection">
     <div class="hero-glow hero-glow-1"></div>
     <div class="hero-glow hero-glow-2"></div>
     <div class="hero-content">
-      <div class="hero-label fade-in fd1">Whole-Person Healing</div>
-      <h1 class="fade-in fd2">
+      <div class="hero-label fade-in fd1" data-edit="hero.label">Whole-Person Healing</div>
+      <h1 class="fade-in fd2" data-edit-html="hero.heading">
         Holistic <em>Mental Health</em><br>and Wellness Center
       </h1>
-      <p class="hero-sub fade-in fd3">
+      <p class="hero-sub fade-in fd3" data-edit="hero.subtitle">
         Culturally oriented, language-specific access to care where family is the main source of support for individuals with mental illness.
       </p>
       <div class="hero-amharic fade-in fd4">
-        <p>ምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል — በባህል ላይ ያተኮረ፣ የአዕምሮ ህመም ላለባቸው ግለሰቦች ዋናው የድጋፍ ምንጭ ቤተሰብ የሆነበት ቋንቋ-ተኮር እንክብካቤ</p>
+        <p data-edit="hero.amharic">ምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል — በባህል ላይ ያተኮረ፣ የአዕምሮ ህመም ላለባቸው ግለሰቦች ዋናው የድጋፍ ምንጭ ቤተሰብ የሆነበት ቋንቋ-ተኮር እንክብካቤ</p>
       </div>
       <div class="hero-btns fade-in fd5">
-        <a href="#services" class="btn btn-primary">Explore Services</a>
-        <a href="#story" class="btn btn-ghost">Read Our Story</a>
+        <a href="#services" class="btn btn-primary" data-edit="hero.primaryCtaLabel" data-href="hero.primaryCtaHref">Explore Services</a>
+        <a href="#story" class="btn btn-ghost" data-edit="hero.secondaryCtaLabel" data-href="hero.secondaryCtaHref">Read Our Story</a>
       </div>
     </div>
     <div class="scroll-hint fade-in fd5">
       <div class="scroll-line"></div>
-      Scroll
+      <span data-edit="hero.scrollHint">Scroll</span>
     </div>
   </section>
 
@@ -668,14 +668,14 @@
     <div class="container">
       <div class="story-layout">
         <div class="story-sticky">
-          <div class="section-label reveal">Our Story</div>
-          <h2 class="section-title reveal">Built from lived<br>experience, shaped<br>by compassion.</h2>
+          <div class="section-label reveal" data-edit="story.label">Our Story</div>
+          <h2 class="section-title reveal" data-edit-html="story.title">Built from lived<br>experience, shaped<br>by compassion.</h2>
           <div class="thin-line reveal rd1"></div>
-          <p class="section-desc reveal rd1">Merkuz was created to close the gap between mental health needs and culturally grounded support.</p>
+          <p class="section-desc reveal rd1" data-edit="story.desc">Merkuz was created to close the gap between mental health needs and culturally grounded support.</p>
         </div>
 
         <div>
-          <div class="story-body">
+          <div class="story-body" id="storyBody">
             <p class="reveal">Merkuz Holistic Mental Health and Wellness Center was founded through the lived experience of our founder, <strong>Menbere Abere</strong>, who spent over a decade as a caregiver for loved ones living with mental health conditions. Her personal journey ignited a deep commitment to support others &mdash; especially those from underrepresented communities &mdash; who are navigating similar challenges.</p>
 
             <p class="reveal">Located in the Greater Bay Area, Merkuz was created to serve individuals and families from East African backgrounds, including Ethiopian, Eritrean, and Somalian diaspora communities. Many of these families face unique barriers to mental health care due to cultural stigma, language differences, and a general distrust of health systems.</p>
@@ -686,15 +686,17 @@
           </div>
 
           <div class="story-quote reveal">
-            <p>At Merkuz, we walk alongside our clients as they begin a new chapter &mdash; grounded in culture, supported by family, and empowered to heal.</p>
+            <p data-edit="story.quote">At Merkuz, we walk alongside our clients as they begin a new chapter &mdash; grounded in culture, supported by family, and empowered to heal.</p>
           </div>
 
           <div class="amharic-block reveal">
-            <h3>የእኛ ታሪክ</h3>
-            <p>የምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል የተመሰረተው የመስራቻችንን ከ10 አመት በላይ የአዕምሮ ጤና ችግር ላለባቸው የቅርብ ቤተሰቦች አስታማሚ እና ረዳት በመሆን ባሳለፉት በግል ጉዞ ምክንያት ያገኙትን ልምድ መሰረት በማድረግ ያገኙትን ልምድ ለሌሎች ለማካፈል ነው።</p>
-            <p>ማእከሉ የተወለደው በካሊፎረኒያ ግዛት በሳንታ ክላራ ካውንቲ ውስጥ ከአእምሮ ህመም ሁኔታዎች ጋር ለሚታገሉ በተለይም ከምስራቅ አፍሪካ (ኢትዮጵያውያን፣ ኤርትራዊ፣ ሶማሊያውያን፣ ወዘተ) ብዙ ግለሰቦች ለመርዳት ካለው ራዕይ ነው።</p>
-            <p>በ2022 የአሜሪካ የሥነ ልቦና ማኅበር ባደረገው ጥናት፣ በዩናይትድ ስቴትስ የሚኖሩ ሕፃናትና ቤተሰቦች ከስደት ጋር ተያይዞ ጉዳት የደረሰባቸው ሕፃናትና ቤተሰቦች ለጉዳት የሚያጋልጡ እንቅፋቶችን አግኝተዋል። ምርኩዝ ይህንን ክፍተት ለማስተካከል እና የማህበረሰቡ አባላት የአእምሮ ጤናን፣ የአደንዛዥ እፅን አላግባብ መጠቀምን እና ስሜታዊ ደህንነትን ለመፍታት እንሰራለን።</p>
-            <p>ተልእኳችን ወገኖቻችን አዲስ ጉዞ ሲጀምሩ ከአዲሱ ሃገራቸው እንዲሁም ከአካባቢያቸው ግር በተሻለ ሁኔታ እንዲግባቡና እና እንዲያድጉ ነው።</p>
+            <h3 data-edit="story.amharicTitle">የእኛ ታሪክ</h3>
+            <div id="storyAmharic">
+              <p>የምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል የተመሰረተው የመስራቻችንን ከ10 አመት በላይ የአዕምሮ ጤና ችግር ላለባቸው የቅርብ ቤተሰቦች አስታማሚ እና ረዳት በመሆን ባሳለፉት በግል ጉዞ ምክንያት ያገኙትን ልምድ መሰረት በማድረግ ያገኙትን ልምድ ለሌሎች ለማካፈል ነው።</p>
+              <p>ማእከሉ የተወለደው በካሊፎረኒያ ግዛት በሳንታ ክላራ ካውንቲ ውስጥ ከአእምሮ ህመም ሁኔታዎች ጋር ለሚታገሉ በተለይም ከምስራቅ አፍሪካ (ኢትዮጵያውያን፣ ኤርትራዊ፣ ሶማሊያውያን፣ ወዘተ) ብዙ ግለሰቦች ለመርዳት ካለው ራዕይ ነው።</p>
+              <p>በ2022 የአሜሪካ የሥነ ልቦና ማኅበር ባደረገው ጥናት፣ በዩናይትድ ስቴትስ የሚኖሩ ሕፃናትና ቤተሰቦች ከስደት ጋር ተያይዞ ጉዳት የደረሰባቸው ሕፃናትና ቤተሰቦች ለጉዳት የሚያጋልጡ እንቅፋቶችን አግኝተዋል። ምርኩዝ ይህንን ክፍተት ለማስተካከል እና የማህበረሰቡ አባላት የአእምሮ ጤናን፣ የአደንዛዥ እፅን አላግባብ መጠቀምን እና ስሜታዊ ደህንነትን ለመፍታት እንሰራለን።</p>
+              <p>ተልእኳችን ወገኖቻችን አዲስ ጉዞ ሲጀምሩ ከአዲሱ ሃገራቸው እንዲሁም ከአካባቢያቸው ግር በተሻለ ሁኔታ እንዲግባቡና እና እንዲያድጉ ነው።</p>
+            </div>
           </div>
         </div>
       </div>
@@ -704,8 +706,8 @@
   <!-- BANNER -->
   <section class="banner">
     <div class="container">
-      <h2 class="reveal">Merkuz Is Your Partner in<br>Mental Health and Wellness</h2>
-      <p class="am-sub reveal rd1">ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው።</p>
+      <h2 class="reveal" data-edit-html="banner.heading">Merkuz Is Your Partner in<br>Mental Health and Wellness</h2>
+      <p class="am-sub reveal rd1" data-edit="banner.amharic">ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው።</p>
     </div>
   </section>
 
@@ -713,12 +715,12 @@
   <section id="services" class="section services">
     <div class="container">
       <div class="services-header">
-        <div class="section-label reveal">Our Services</div>
-        <h2 class="section-title reveal">Simple ways to begin,<br>connect, and heal.</h2>
-        <p class="section-desc reveal rd1" style="margin: 20px auto 0;">Whether you need guidance, community, or shared support, Merkuz offers welcoming entry points into care.</p>
+        <div class="section-label reveal" data-edit="services.label">Our Services</div>
+        <h2 class="section-title reveal" data-edit-html="services.title">Simple ways to begin,<br>connect, and heal.</h2>
+        <p class="section-desc reveal rd1" style="margin: 20px auto 0;" data-edit="services.desc">Whether you need guidance, community, or shared support, Merkuz offers welcoming entry points into care.</p>
       </div>
 
-      <div class="services-grid">
+      <div class="services-grid" id="servicesGrid">
         <div class="s-card reveal rd1">
           <div class="s-card-num">01</div>
           <h3>Counselling Sessions</h3>
@@ -748,12 +750,12 @@
     <div class="container">
       <div class="programs-layout">
         <div>
-          <div class="section-label reveal">Programs</div>
-          <h2 class="section-title reveal">Holistic support,<br>delivered with care.</h2>
+          <div class="section-label reveal" data-edit="programs.label">Programs</div>
+          <h2 class="section-title reveal" data-edit-html="programs.title">Holistic support,<br>delivered with care.</h2>
           <div class="thin-line reveal rd1"></div>
-          <p class="section-desc reveal rd1">Programs designed to support emotional well-being, learning, community connection, and advocacy.</p>
+          <p class="section-desc reveal rd1" data-edit="programs.desc">Programs designed to support emotional well-being, learning, community connection, and advocacy.</p>
 
-          <div class="program-list">
+          <div class="program-list" id="programList">
             <div class="program-item reveal rd1">
               <div class="program-dot"></div>
               <span>Secular and Religious Counseling</span>
@@ -774,9 +776,11 @@
         </div>
 
         <div class="programs-am-card reveal rd2">
-          <h3>የምርኩዝ የአእምሮ ጤና እና ደህንነት ማእከል</h3>
-          <p>ይህ የአእምሮ ጤና ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።</p>
-          <p>የእኛ አባላት ለግል እድገት፣ ራስን ለማንፀባረቅ፣ ለመማር እና ለመተሳሰር እና ቦታ ይሰጣሉ። ለበለጠ መረጃ ጋብዘናቹህ እንደምትቀላቀሉን ተስፋ እናደርጋለን!</p>
+          <h3 data-edit="programs.amharicTitle">የምርኩዝ የአእምሮ ጤና እና ደህንነት ማእከል</h3>
+          <div id="programsAmParagraphs">
+            <p>ይህ የአእምሮ ጤና ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።</p>
+            <p>የእኛ አባላት ለግል እድገት፣ ራስን ለማንፀባረቅ፣ ለመማር እና ለመተሳሰር እና ቦታ ይሰጣሉ። ለበለጠ መረጃ ጋብዘናቹህ እንደምትቀላቀሉን ተስፋ እናደርጋለን!</p>
+          </div>
         </div>
       </div>
     </div>
@@ -787,43 +791,159 @@
     <div class="container">
       <div class="contact-grid">
         <div>
-          <div class="section-label reveal">Get in Touch</div>
-          <h2 class="reveal">Whole-Person Healing<br>Starts Here</h2>
-          <p class="contact-desc reveal rd1">We're here to support you and your family. Reach out to learn more about our services or to begin your healing journey.</p>
+          <div class="section-label reveal" data-edit="contact.label">Get in Touch</div>
+          <h2 class="reveal" data-edit-html="contact.title">Whole-Person Healing<br>Starts Here</h2>
+          <p class="contact-desc reveal rd1" data-edit="contact.desc">We're here to support you and your family. Reach out to learn more about our services or to begin your healing journey.</p>
 
           <div class="contact-items">
             <div class="contact-item reveal rd1">
               <div class="contact-icon">&#9742;</div>
-              <a href="tel:6692929038">669-292-9038</a>
+              <a id="contactPhoneLink" href="tel:6692929038" data-edit="contact.phone">669-292-9038</a>
             </div>
             <div class="contact-item reveal rd2">
               <div class="contact-icon">&#9993;</div>
-              <a href="mailto:hello@merkuzcenter.com">hello@merkuzcenter.com</a>
+              <a id="contactEmailLink" href="mailto:hello@merkuzcenter.com" data-edit="contact.email">hello@merkuzcenter.com</a>
             </div>
             <div class="contact-item reveal rd3">
               <div class="contact-icon">@</div>
-              <span>@merkuzcenter</span>
+              <span data-edit="contact.handle">@merkuzcenter</span>
             </div>
           </div>
         </div>
 
         <div class="contact-right-card reveal rd2">
-          <h3>ሙሉ ሰው ፈውስ</h3>
-          <p>ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው። ለበለጠ መረጃ ያግኙን።</p>
+          <h3 data-edit="contact.rightCardTitle">ሙሉ ሰው ፈውስ</h3>
+          <p data-edit="contact.rightCardDesc">ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው። ለበለጠ መረጃ ያግኙን።</p>
           <div class="cta-area">
-            <a href="mailto:hello@merkuzcenter.com" class="btn btn-light">Contact Us</a>
+            <a href="mailto:hello@merkuzcenter.com" class="btn btn-light" data-edit="contact.rightCardCtaLabel" data-href="contact.rightCardCtaHref">Contact Us</a>
           </div>
         </div>
       </div>
 
       <div class="footer-bar">
-        <span>&copy; 2026 Merkuz Holistic Mental Health and Wellness Center</span>
-        <span>Greater Bay Area, California</span>
+        <span data-edit="contact.footerLeft">&copy; 2026 Merkuz Holistic Mental Health and Wellness Center</span>
+        <span data-edit="contact.footerRight">Greater Bay Area, California</span>
       </div>
     </div>
   </section>
 
   <script>
+    // ── CONTENT HYDRATION ───────────────────────────────────────────────
+    function getPath(obj, path) {
+      return path.split('.').reduce((o, k) => {
+        if (o == null) return undefined;
+        return /^\d+$/.test(k) ? o[parseInt(k, 10)] : o[k];
+      }, obj);
+    }
+
+    function applyContent(c) {
+      if (!c) return;
+
+      document.querySelectorAll('[data-edit]').forEach(el => {
+        const v = getPath(c, el.dataset.edit);
+        if (typeof v === 'string') el.textContent = v;
+      });
+      document.querySelectorAll('[data-edit-html]').forEach(el => {
+        const v = getPath(c, el.dataset.editHtml);
+        if (typeof v === 'string') el.innerHTML = v;
+      });
+      document.querySelectorAll('[data-href]').forEach(el => {
+        const v = getPath(c, el.dataset.href);
+        if (typeof v === 'string') el.setAttribute('href', v);
+      });
+
+      // Contact link href prefixes
+      if (c.contact?.phone) {
+        const p = document.getElementById('contactPhoneLink');
+        if (p) p.setAttribute('href', 'tel:' + c.contact.phone.replace(/[^0-9+]/g, ''));
+      }
+      if (c.contact?.email) {
+        const e = document.getElementById('contactEmailLink');
+        if (e) e.setAttribute('href', 'mailto:' + c.contact.email);
+      }
+
+      // Hero optional background image
+      if (c.hero?.backgroundImage) {
+        const hero = document.getElementById('heroSection');
+        if (hero) {
+          hero.style.backgroundImage =
+            `linear-gradient(175deg, rgba(249,246,241,0.82) 0%, rgba(243,237,227,0.78) 60%, rgba(237,231,219,0.82) 100%), url('${c.hero.backgroundImage}')`;
+          hero.style.backgroundSize = 'cover';
+          hero.style.backgroundPosition = 'center';
+        }
+      }
+
+      // Story paragraphs
+      if (Array.isArray(c.story?.paragraphs)) {
+        const body = document.getElementById('storyBody');
+        if (body) {
+          body.innerHTML = c.story.paragraphs.map(p =>
+            `<p class="reveal">${p}</p>`
+          ).join('');
+        }
+      }
+
+      // Story Amharic paragraphs
+      if (Array.isArray(c.story?.amharicParagraphs)) {
+        const box = document.getElementById('storyAmharic');
+        if (box) box.innerHTML = c.story.amharicParagraphs.map(p => `<p>${p}</p>`).join('');
+      }
+
+      // Services cards
+      if (Array.isArray(c.services?.cards)) {
+        const grid = document.getElementById('servicesGrid');
+        if (grid) {
+          grid.innerHTML = c.services.cards.map((card, i) => {
+            const delay = ['rd1', 'rd2', 'rd3'][i] || 'rd3';
+            const img = card.image
+              ? `<img src="${card.image}" alt="" style="width:100%;border-radius:12px;margin-bottom:20px;object-fit:cover;aspect-ratio:4/3;">`
+              : '';
+            return `
+              <div class="s-card reveal ${delay}">
+                ${img}
+                <div class="s-card-num">${card.number || ''}</div>
+                <h3>${card.title || ''}</h3>
+                <p class="en">${card.en || ''}</p>
+                <p class="am">${card.am || ''}</p>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Programs items
+      if (Array.isArray(c.programs?.items)) {
+        const list = document.getElementById('programList');
+        if (list) {
+          list.innerHTML = c.programs.items.map((item, i) => {
+            const delay = ['rd1', 'rd2', 'rd2', 'rd3'][i] || 'rd3';
+            return `
+              <div class="program-item reveal ${delay}">
+                <div class="program-dot"></div>
+                <span>${item}</span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Programs Amharic paragraphs
+      if (Array.isArray(c.programs?.amharicParagraphs)) {
+        const box = document.getElementById('programsAmParagraphs');
+        if (box) box.innerHTML = c.programs.amharicParagraphs.map(p => `<p>${p}</p>`).join('');
+      }
+    }
+
+    async function loadContent() {
+      try {
+        const res = await fetch('content.json?t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return;
+        applyContent(await res.json());
+      } catch (err) {
+        console.warn('Content hydration failed, using defaults', err);
+      }
+    }
+
     // Nav
     const nav = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
@@ -835,14 +955,18 @@
       document.getElementById('navLinks').classList.toggle('open');
     });
 
-    // Scroll reveal
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) e.target.classList.add('visible');
-      });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    // Scroll reveal (re-init after content load so rebuilt elements get observed)
+    function initReveal() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) e.target.classList.add('visible');
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    }
 
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    initReveal();
+    loadContent().then(initReveal);
   </script>
 </body>
 </html>
