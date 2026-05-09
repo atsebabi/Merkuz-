@@ -15,20 +15,20 @@
         "href": "#programs"
       },
       {
-        "label": "How to support MERKUZ",
-        "href": "merkuz go fund me"
+        "label": "Support Us",
+        "href": "https://www.gofundme.com/f/merkuz.org-id"
       },
       {
-        "label": "ON LINE SERVICE",
+        "label": "TELEHEALTH SERVICE",
         "href": "#Telehealth"
       },
       {
-        "label": "New Link",
-        "href": "#Biography of Founding Board Members"
+        "label": "Board of Directors",
+        "href": "#board-members"
       }
     ],
-    "ctaLabel": "Get in Touch",
-    "ctaHref": "#contact"
+    "ctaLabel": "Join a Program",
+    "ctaHref": "#bookaconsultation"
   },
   "hero": {
     "label": "Whole-Person Healing",
