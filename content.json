@@ -40,7 +40,7 @@
     "secondaryCtaLabel": "Read Our Story",
     "secondaryCtaHref": "#story",
     "scrollHint": "Scroll",
-    "backgroundImage": "<img src=\"YOUR_IMAGE_URL_HERE\" width=\"100%\" style=\"border-radius: 8px;\">"
+    "backgroundImage": "https://www.example.com/your-photo.jpg"
   },
   "story": {
     "label": "Our Story ",
