@@ -117,29 +117,4 @@
     "items": [
       "Secular and Religious Counseling and Therapy",
       "Training and Education",
-      "Outreach and Community Engagement",
-      "Advocacy",
-      "Telehealth",
-      "Adults , Family and Children Behavioural Health Services  "
-    ],
-    "amharicTitle": "የምርኩዝ የአእምሮ ጤና እና ደህንነት ማእከል",
-    "amharicParagraphs": [
-      "ይህ የአእምሮ ጤና ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።",
-      "የእኛ አባላት ለግል እድገት፣ ራስን ለማንፀባረቅ፣ ለመማር እና ለመተሳሰር እና ቦታ ይሰጣሉ። ለበለጠ መረጃ ጋብዘናቹህ እንደምትቀላቀሉን ተስፋ እናደርጋለን!"
-    ]
-  },
-  "contact": {
-    "label": "Get in Touch",
-    "title": "Whole-Person Healing<br>Starts Here",
-    "desc": "We're here to support you and your family. Reach out to learn more about our services or to begin your healing journey.",
-    "phone": "669-292-9038",
-    "email": "hello@merkuzcenter.com",
-    "handle": "@merkuzcenter",
-    "rightCardTitle": "ሙሉ ሰው ፈውስ",
-    "rightCardDesc": "ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው። ለበለጠ መረጃ ያግኙን።",
-    "rightCardCtaLabel": "Contact Us",
-    "rightCardCtaHref": "mailto:hello@merkuzcenter.com",
-    "footerLeft": "© 2026 Merkuz Holistic Mental Health and Wellness Center",
-    "footerRight": "Greater Bay Area, California"
-  }
-}
+
