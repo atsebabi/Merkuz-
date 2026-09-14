@@ -68,8 +68,9 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
     }
-    .nav-links { display: flex; gap: 36px; align-items: center; }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
     .nav-links a {
+      white-space: nowrap;
       font-size: 0.82rem; font-weight: 400;
       color: var(--text-soft);
       letter-spacing: 0.04em;
@@ -250,6 +251,7 @@
       color: var(--forest);
     }
     .section-desc {
+      white-space: pre-line;
       margin-top: 20px;
       font-size: 1rem; line-height: 1.9;
       color: var(--text-soft);
@@ -402,6 +404,26 @@
       color: var(--text-soft);
       font-weight: 300;
     }
+    .s-card .en > * + * { margin-top: 14px; }
+    .s-card .en h2,
+    .s-card .en h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      color: var(--forest);
+      line-height: 1.3;
+    }
+    .s-card .en h2 { font-size: 1.2rem; }
+    .s-card .en h3 { font-size: 1.05rem; }
+    .s-card .en ul,
+    .s-card .en ol { padding-left: 1.2em; }
+    .s-card .en li + li { margin-top: 8px; }
+    .s-card .en strong { font-weight: 500; color: var(--text); }
+    .s-card .en a { color: var(--olive); text-decoration: underline; }
+    .s-card .en hr { border: none; border-top: 1px solid var(--divider); }
+    .s-card-img {
+      width: 100%; aspect-ratio: 4 / 3; object-fit: cover;
+      border-radius: 12px; margin-bottom: 20px;
+    }
     .s-card .am {
       margin-top: 20px; padding-top: 20px;
       border-top: 1px solid var(--divider);
@@ -506,6 +528,7 @@
       color: var(--cream);
     }
     .contact-desc {
+      white-space: pre-line;
       margin-top: 18px;
       font-size: 0.95rem; line-height: 1.85;
       color: rgba(249, 246, 241, 0.55);
@@ -593,6 +616,17 @@
     }
 
     /* ── RESPONSIVE ── */
+    @media (max-width: 1100px) {
+      .nav-links { display: none; }
+      .menu-toggle { display: block; }
+      .nav-links.open {
+        display: flex; flex-direction: column; align-items: flex-start;
+        position: absolute; top: 100%; left: 0; right: 0;
+        background: var(--cream);
+        padding: 28px 40px; gap: 20px;
+        border-bottom: 1px solid var(--divider);
+      }
+    }
     @media (max-width: 900px) {
       .hero-content { padding: 140px 28px 80px; }
       .story-layout,
@@ -604,15 +638,6 @@
       .story-layout { gap: 48px; }
       .story-sticky { position: static; }
       .services-grid { gap: 16px; }
-      .nav-links { display: none; }
-      .menu-toggle { display: block; }
-      .nav-links.open {
-        display: flex; flex-direction: column;
-        position: absolute; top: 100%; left: 0; right: 0;
-        background: var(--cream);
-        padding: 28px 40px; gap: 20px;
-        border-bottom: 1px solid var(--divider);
-      }
       .section { padding: 80px 0; }
       .container { padding: 0 24px; }
       .footer-bar { flex-direction: column; gap: 10px; text-align: center; }
@@ -626,12 +651,12 @@
     <div class="nav-inner">
       <a href="#" class="logo" data-edit="nav.logo">Merkuz</a>
       <div class="nav-links" id="navLinks">
-        <a href="#story" data-edit="nav.links.0.label" data-href="nav.links.0.href">Our Story</a>
-        <a href="#services" data-edit="nav.links.1.label" data-href="nav.links.1.href">Services</a>
-        <a href="#programs" data-edit="nav.links.2.label" data-href="nav.links.2.href">Programs</a>
+        <a href="#story">Our Story</a>
+        <a href="#services">Services</a>
+        <a href="#programs">Programs</a>
         <a href="#contact" class="nav-cta" data-edit="nav.ctaLabel" data-href="nav.ctaHref">Get in Touch</a>
       </div>
-      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
       </button>
     </div>
@@ -646,9 +671,7 @@
       <h1 class="fade-in fd2" data-edit-html="hero.heading">
         Holistic <em>Mental Health</em><br>and Wellness Center
       </h1>
-      <p class="hero-sub fade-in fd3" data-edit="hero.subtitle">
-        Culturally oriented, language-specific access to care where family is the main source of support for individuals with mental illness.
-      </p>
+      <p class="hero-sub fade-in fd3" data-edit="hero.subtitle">Culturally oriented, language-specific access to care where family is the main source of support for individuals with mental illness.</p>
       <div class="hero-amharic fade-in fd4">
         <p data-edit="hero.amharic">ምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል — በባህል ላይ ያተኮረ፣ የአዕምሮ ህመም ላለባቸው ግለሰቦች ዋናው የድጋፍ ምንጭ ቤተሰብ የሆነበት ቋንቋ-ተኮር እንክብካቤ</p>
       </div>
@@ -829,12 +852,22 @@
 
   <script>
     // ── CONTENT HYDRATION ───────────────────────────────────────────────
+    // Text fields are set with textContent; fields the admin panel marks as
+    // "HTML allowed" (and list/card bodies) are set as HTML.
     function getPath(obj, path) {
-      return path.split('.').reduce((o, k) => {
-        if (o == null) return undefined;
-        return /^\d+$/.test(k) ? o[parseInt(k, 10)] : o[k];
-      }, obj);
+      return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
     }
+
+    function escapeAttr(s) {
+      return String(s ?? '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+    }
+
+    function renderInto(id, items, toHtml) {
+      const el = document.getElementById(id);
+      if (el && Array.isArray(items)) el.innerHTML = items.map(toHtml).join('');
+    }
+
+    const DELAYS = ['rd1', 'rd2', 'rd3'];
 
     function applyContent(c) {
       if (!c) return;
@@ -852,6 +885,23 @@
         if (typeof v === 'string') el.setAttribute('href', v);
       });
 
+      // Nav links (inserted before the CTA button)
+      if (Array.isArray(c.nav?.links)) {
+        const navLinks = document.getElementById('navLinks');
+        navLinks.querySelectorAll('a:not(.nav-cta)').forEach(a => a.remove());
+        const cta = navLinks.querySelector('.nav-cta');
+        c.nav.links.forEach(link => {
+          const a = document.createElement('a');
+          a.href = link.href || '#';
+          a.textContent = link.label || '';
+          if (/^https?:\/\//.test(a.getAttribute('href'))) {
+            a.target = '_blank';
+            a.rel = 'noopener';
+          }
+          navLinks.insertBefore(a, cta);
+        });
+      }
+
       // Contact link href prefixes
       if (c.contact?.phone) {
         const p = document.getElementById('contactPhoneLink');
@@ -859,86 +909,45 @@
       }
       if (c.contact?.email) {
         const e = document.getElementById('contactEmailLink');
-        if (e) e.setAttribute('href', 'mailto:' + c.contact.email);
+        if (e) e.setAttribute('href', 'mailto:' + c.contact.email.trim());
       }
 
       // Hero optional background image
       if (c.hero?.backgroundImage) {
         const hero = document.getElementById('heroSection');
-        if (hero) {
-          hero.style.backgroundImage =
-            `linear-gradient(175deg, rgba(249,246,241,0.82) 0%, rgba(243,237,227,0.78) 60%, rgba(237,231,219,0.82) 100%), url('${c.hero.backgroundImage}')`;
-          hero.style.backgroundSize = 'cover';
-          hero.style.backgroundPosition = 'center';
-        }
+        hero.style.backgroundImage =
+          `linear-gradient(175deg, rgba(249,246,241,0.82) 0%, rgba(243,237,227,0.78) 60%, rgba(237,231,219,0.82) 100%), url(${JSON.stringify(c.hero.backgroundImage)})`;
+        hero.style.backgroundSize = 'cover';
+        hero.style.backgroundPosition = 'center';
       }
 
-      // Story paragraphs
-      if (Array.isArray(c.story?.paragraphs)) {
-        const body = document.getElementById('storyBody');
-        if (body) {
-          body.innerHTML = c.story.paragraphs.map(p =>
-            `<p class="reveal">${p}</p>`
-          ).join('');
-        }
-      }
+      renderInto('storyBody', c.story?.paragraphs, p => `<p class="reveal">${p}</p>`);
+      renderInto('storyAmharic', c.story?.amharicParagraphs, p => `<p>${p}</p>`);
 
-      // Story Amharic paragraphs
-      if (Array.isArray(c.story?.amharicParagraphs)) {
-        const box = document.getElementById('storyAmharic');
-        if (box) box.innerHTML = c.story.amharicParagraphs.map(p => `<p>${p}</p>`).join('');
-      }
+      renderInto('servicesGrid', c.services?.cards, (card, i) => `
+        <div class="s-card reveal ${DELAYS[i] || 'rd3'}">
+          ${card.image ? `<img class="s-card-img" src="${escapeAttr(card.image)}" alt="" loading="lazy">` : ''}
+          <div class="s-card-num">${card.number || ''}</div>
+          <h3>${card.title || ''}</h3>
+          <div class="en">${card.en || ''}</div>
+          ${card.am ? `<p class="am">${card.am}</p>` : ''}
+        </div>
+      `);
 
-      // Services cards
-      if (Array.isArray(c.services?.cards)) {
-        const grid = document.getElementById('servicesGrid');
-        if (grid) {
-          grid.innerHTML = c.services.cards.map((card, i) => {
-            const delay = ['rd1', 'rd2', 'rd3'][i] || 'rd3';
-            const img = card.image
-              ? `<img src="${card.image}" alt="" style="width:100%;border-radius:12px;margin-bottom:20px;object-fit:cover;aspect-ratio:4/3;">`
-              : '';
-            return `
-              <div class="s-card reveal ${delay}">
-                ${img}
-                <div class="s-card-num">${card.number || ''}</div>
-                <h3>${card.title || ''}</h3>
-                <p class="en">${card.en || ''}</p>
-                <p class="am">${card.am || ''}</p>
-              </div>
-            `;
-          }).join('');
-        }
-      }
+      renderInto('programList', c.programs?.items, (item, i) => `
+        <div class="program-item reveal ${DELAYS[i] || 'rd3'}">
+          <div class="program-dot"></div>
+          <span>${item}</span>
+        </div>
+      `);
 
-      // Programs items
-      if (Array.isArray(c.programs?.items)) {
-        const list = document.getElementById('programList');
-        if (list) {
-          list.innerHTML = c.programs.items.map((item, i) => {
-            const delay = ['rd1', 'rd2', 'rd2', 'rd3'][i] || 'rd3';
-            return `
-              <div class="program-item reveal ${delay}">
-                <div class="program-dot"></div>
-                <span>${item}</span>
-              </div>
-            `;
-          }).join('');
-        }
-      }
-
-      // Programs Amharic paragraphs
-      if (Array.isArray(c.programs?.amharicParagraphs)) {
-        const box = document.getElementById('programsAmParagraphs');
-        if (box) box.innerHTML = c.programs.amharicParagraphs.map(p => `<p>${p}</p>`).join('');
-      }
+      renderInto('programsAmParagraphs', c.programs?.amharicParagraphs, p => `<p>${p}</p>`);
     }
 
     async function loadContent() {
       try {
         const res = await fetch('content.json?t=' + Date.now(), { cache: 'no-store' });
-        if (!res.ok) return;
-        applyContent(await res.json());
+        if (res.ok) applyContent(await res.json());
       } catch (err) {
         console.warn('Content hydration failed, using defaults', err);
       }
@@ -948,21 +957,31 @@
     const nav = document.getElementById('navbar');
     window.addEventListener('scroll', () => {
       nav.classList.toggle('scrolled', window.scrollY > 50);
-    });
+    }, { passive: true });
 
     // Mobile menu
-    document.getElementById('menuToggle').addEventListener('click', () => {
-      document.getElementById('navLinks').classList.toggle('open');
+    const menuToggle = document.getElementById('menuToggle');
+    const navLinks = document.getElementById('navLinks');
+    function setMenuOpen(open) {
+      navLinks.classList.toggle('open', open);
+      menuToggle.setAttribute('aria-expanded', String(open));
+    }
+    menuToggle.addEventListener('click', () => setMenuOpen(!navLinks.classList.contains('open')));
+    navLinks.addEventListener('click', (e) => {
+      if (e.target.closest('a')) setMenuOpen(false);
     });
 
-    // Scroll reveal (re-init after content load so rebuilt elements get observed)
+    // Scroll reveal. Called again after hydration so rebuilt elements are observed.
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('visible');
+        revealObserver.unobserve(e.target);
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
     function initReveal() {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) e.target.classList.add('visible');
-        });
-      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+      document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
     }
 
     initReveal();

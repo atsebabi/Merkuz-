@@ -128,7 +128,7 @@
     .btn-primary:hover:not(:disabled) {
       background: var(--forest);
     }
-    .btn-primary:disabled {
+    .btn:disabled {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -445,8 +445,8 @@
 
       <div class="sidebar-footer">
         <div class="sidebar-meta" id="repoMeta"></div>
-        <a href="/" target="_blank" class="btn btn-ghost btn-sm" style="color:var(--clay-light);border-color:rgba(249,246,241,0.15);">View Site ↗</a>
-        <button class="btn btn-danger btn-sm" id="logoutBtn">Sign Out</button>
+        <a href="/" target="_blank" rel="noopener" class="btn btn-ghost btn-sm" style="color:var(--clay-light);border-color:rgba(249,246,241,0.15);">View Site ↗</a>
+        <button type="button" class="btn btn-danger btn-sm" id="logoutBtn">Sign Out</button>
       </div>
     </aside>
 
@@ -457,7 +457,7 @@
           <div class="main-desc" id="sectionDesc">Top nav links and call-to-action.</div>
         </div>
         <div class="main-actions">
-          <button class="btn btn-ghost btn-sm" id="reloadBtn">Reload</button>
+          <button type="button" class="btn btn-ghost btn-sm" id="reloadBtn">Reload</button>
         </div>
       </div>
 
@@ -482,7 +482,7 @@
           <h3>Nav Links</h3>
           <div class="card-sub">Menu items shown in the top navigation.</div>
           <div id="navLinksList"></div>
-          <button class="btn btn-ghost btn-sm" data-add="nav.links">+ Add Link</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="nav.links">+ Add Link</button>
         </div>
 
         <div class="card">
@@ -529,8 +529,8 @@
           </div>
           <div class="field">
             <label>Hero Background Image URL (optional)</label>
-            <input type="url" data-bind="hero.backgroundImage" data-preview="heroBgPreview" placeholder="https://example.com/image.jpg">
-            <img id="heroBgPreview" class="image-preview" alt="">
+            <input type="url" data-bind="hero.backgroundImage" data-preview placeholder="https://example.com/image.jpg">
+            <img class="image-preview" alt="">
             <div class="hint">Leave blank to keep the default gradient background.</div>
           </div>
         </div>
@@ -586,7 +586,7 @@
           <h3>Story Paragraphs (English)</h3>
           <div class="card-sub">Main body text. HTML tags like <code>&lt;strong&gt;</code> are supported.</div>
           <div id="storyParagraphsList"></div>
-          <button class="btn btn-ghost btn-sm" data-add="story.paragraphs">+ Add Paragraph</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="story.paragraphs">+ Add Paragraph</button>
         </div>
 
         <div class="card">
@@ -604,7 +604,7 @@
             <input type="text" data-bind="story.amharicTitle">
           </div>
           <div id="storyAmharicList"></div>
-          <button class="btn btn-ghost btn-sm" data-add="story.amharicParagraphs">+ Add Paragraph</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="story.amharicParagraphs">+ Add Paragraph</button>
         </div>
       </div>
 
@@ -646,7 +646,7 @@
           <h3>Service Cards</h3>
           <div class="card-sub">Each card shown in the 3-column grid.</div>
           <div id="servicesCardsList"></div>
-          <button class="btn btn-ghost btn-sm" data-add="services.cards">+ Add Service</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="services.cards">+ Add Service</button>
         </div>
       </div>
 
@@ -672,7 +672,7 @@
           <h3>Program List</h3>
           <div class="card-sub">The bulleted items shown on the left.</div>
           <div id="programsItemsList"></div>
-          <button class="btn btn-ghost btn-sm" data-add="programs.items">+ Add Program</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="programs.items">+ Add Program</button>
         </div>
 
         <div class="card">
@@ -682,7 +682,7 @@
             <input type="text" data-bind="programs.amharicTitle">
           </div>
           <div id="programsAmList"></div>
-          <button class="btn btn-ghost btn-sm" data-add="programs.amharicParagraphs">+ Add Paragraph</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-add="programs.amharicParagraphs">+ Add Paragraph</button>
         </div>
       </div>
 
@@ -762,8 +762,8 @@
     <div class="save-bar" id="saveBar">
       <div class="save-status" id="saveStatus">All changes saved.</div>
       <div style="display:flex;gap:10px;">
-        <button class="btn btn-ghost btn-sm" id="discardBtn">Discard Changes</button>
-        <button class="btn btn-primary" id="saveBtn">
+        <button type="button" class="btn btn-ghost btn-sm" id="discardBtn">Discard Changes</button>
+        <button type="button" class="btn btn-primary" id="saveBtn">
           <span id="saveBtnLabel">Publish Changes</span>
         </button>
       </div>
@@ -776,16 +776,22 @@
     // ══════════════════════════════════════════════════════════════════
     const state = {
       session: null,    // { token, expiresAt, username }
-      content: null,    // parsed JSON
-      original: null,   // JSON string (for dirty check)
+      content: null,    // parsed JSON being edited
+      original: null,   // JSON string of the last loaded/published content (for dirty check)
+      sha: null,        // GitHub blob SHA of the loaded content (for conflict detection)
       section: 'nav',
     };
 
-    const LS_KEY = 'merkuz-admin-session';
+    const SESSION_KEY = 'merkuz-admin-session';
+    const DRAFT_KEY = 'merkuz-admin-draft';
+
+    class SessionExpiredError extends Error {}
 
     // ══════════════════════════════════════════════════════════════════
     // UTILITIES
     // ══════════════════════════════════════════════════════════════════
+    const $ = (id) => document.getElementById(id);
+
     function getPath(obj, path) {
       return path.split('.').reduce((o, k) => o == null ? undefined : o[k], obj);
     }
@@ -797,112 +803,250 @@
     }
 
     function showAlert(elId, msg, type = 'error') {
-      const el = document.getElementById(elId);
-      if (!msg) { el.innerHTML = ''; return; }
-      el.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+      const el = $(elId);
+      el.replaceChildren();
+      if (!msg) return;
+      const div = document.createElement('div');
+      div.className = `alert alert-${type}`;
+      div.textContent = msg; // messages can contain server text — never inject as HTML
+      el.appendChild(div);
+    }
+
+    function readStorage(key) {
+      try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
+    }
+    function writeStorage(key, value) {
+      try {
+        if (value == null) localStorage.removeItem(key);
+        else localStorage.setItem(key, JSON.stringify(value));
+      } catch { /* storage unavailable (private mode) — non-fatal */ }
     }
 
     function isDirty() {
-      return state.content && JSON.stringify(state.content) !== state.original;
+      return state.content != null && JSON.stringify(state.content) !== state.original;
     }
     function updateDirtyUI() {
-      const status = document.getElementById('saveStatus');
-      const saveBtn = document.getElementById('saveBtn');
-      if (isDirty()) {
-        status.textContent = 'You have unsaved changes.';
-        status.classList.add('dirty');
-        saveBtn.disabled = false;
-      } else {
-        status.textContent = 'All changes saved.';
-        status.classList.remove('dirty');
-        saveBtn.disabled = true;
-      }
+      const dirty = isDirty();
+      const status = $('saveStatus');
+      status.textContent = dirty ? 'You have unsaved changes.' : 'All changes saved.';
+      status.classList.toggle('dirty', dirty);
+      $('saveBtn').disabled = !dirty;
+      $('discardBtn').disabled = !dirty;
+    }
+
+    function setBusy(btnId, labelId, busy, idleText) {
+      $(btnId).disabled = busy;
+      if (busy) $(labelId).innerHTML = '<span class="loader"></span>';
+      else $(labelId).textContent = idleText;
     }
 
     // ══════════════════════════════════════════════════════════════════
     // SESSION
     // ══════════════════════════════════════════════════════════════════
     function loadSession() {
-      try {
-        const raw = localStorage.getItem(LS_KEY);
-        if (!raw) return null;
-        const s = JSON.parse(raw);
-        if (!s.token || !s.expiresAt || Date.now() >= s.expiresAt) return null;
-        return s;
-      } catch { return null; }
+      const s = readStorage(SESSION_KEY);
+      return s && s.token && s.expiresAt && Date.now() < s.expiresAt ? s : null;
     }
-    function saveSession(s) { localStorage.setItem(LS_KEY, JSON.stringify(s)); }
-    function clearSession() { localStorage.removeItem(LS_KEY); }
+
+    function authHeaders() {
+      return { 'Authorization': `Bearer ${state.session.token}` };
+    }
+
+    function showLogin(message) {
+      $('editorView').style.display = 'none';
+      $('loginView').style.display = '';
+      showAlert('loginAlert', message || '');
+      $('loginPassword').value = '';
+    }
+
+    // Keeps unsaved edits in localStorage so they survive re-authentication.
+    function handleSessionExpired() {
+      if (isDirty()) writeStorage(DRAFT_KEY, { content: state.content, sha: state.sha });
+      writeStorage(SESSION_KEY, null);
+      state.session = null;
+      state.content = null;
+      showLogin('Your session expired. Sign in again — any unsaved edits will be restored.');
+    }
 
     // ══════════════════════════════════════════════════════════════════
     // CONTENT I/O
     // ══════════════════════════════════════════════════════════════════
-    async function fetchContent() {
-      // Public file — no auth needed to read
-      const res = await fetch('/content.json?t=' + Date.now(), { cache: 'no-store' });
-      if (!res.ok) throw new Error(`Could not load content.json (${res.status})`);
-      const json = await res.json();
-      state.content = json;
-      state.original = JSON.stringify(json);
-      return json;
+    function setContent(content, sha) {
+      state.content = content;
+      state.original = JSON.stringify(content);
+      state.sha = sha || null;
     }
 
-    async function commitContent() {
+    // Loads the latest content from GitHub (via /api/content). If that fails,
+    // falls back to the deployed /content.json so the admin can still review
+    // it, and returns a warning explaining why publishing may not work.
+    async function loadContent() {
+      let apiError;
+      try {
+        const res = await fetch('/api/content', { headers: authHeaders(), cache: 'no-store' });
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 401) throw new SessionExpiredError();
+        if (res.ok) {
+          setContent(body.content, body.sha);
+          return null;
+        }
+        apiError = body.error || `Could not load the latest content (HTTP ${res.status}).`;
+      } catch (err) {
+        if (err instanceof SessionExpiredError) throw err;
+        apiError = `Could not load the latest content: ${err.message}`;
+      }
+
+      const res = await fetch('/content.json?t=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) throw new Error(`${apiError} The published content.json could not be loaded either (HTTP ${res.status}).`);
+      setContent(await res.json(), null);
+      return `${apiError} Showing the currently published content instead; publishing will fail until this is fixed.`;
+    }
+
+    async function publishContent() {
+      const snapshot = JSON.stringify(state.content);
       const res = await fetch('/api/save', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          token: state.session.token,
-          content: state.content,
-        }),
+        headers: { ...authHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content: state.content, sha: state.sha }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        if (res.status === 401) {
-          clearSession();
-          state.session = null;
-          setTimeout(() => location.reload(), 1500);
-          throw new Error('Session expired. Redirecting to login…');
-        }
-        throw new Error(body.error || `Save failed (${res.status})`);
-      }
-      state.original = JSON.stringify(state.content);
-      updateDirtyUI();
-      return body;
+      if (res.status === 401) throw new SessionExpiredError();
+      if (!res.ok) throw new Error(body.error || `Save failed (HTTP ${res.status})`);
+      // Use the snapshot, not current state: edits made while the request was
+      // in flight have not been published and must stay marked as unsaved.
+      state.original = snapshot;
+      state.sha = body.sha || null;
     }
 
     // ══════════════════════════════════════════════════════════════════
     // FORM RENDERING
     // ══════════════════════════════════════════════════════════════════
-    function bindFields() {
-      // Simple scalar fields
-      document.querySelectorAll('[data-bind]').forEach(el => {
-        const path = el.dataset.bind;
-        const val = getPath(state.content, path);
-        el.value = val == null ? '' : String(val);
-        el.oninput = () => {
-          setPath(state.content, path, el.value);
-          updateDirtyUI();
-          // Image preview
-          const previewId = el.dataset.preview;
-          if (previewId) updateImagePreview(previewId, el.value);
-        };
-        // Init preview
-        if (el.dataset.preview) updateImagePreview(el.dataset.preview, el.value);
-      });
+    // Repeatable lists. A field with no `key` edits a plain string item;
+    // a nested array of fields renders side by side.
+    const LISTS = {
+      'nav.links': {
+        container: 'navLinksList', itemLabel: 'Link',
+        fields: [[{ key: 'label', label: 'Label' }, { key: 'href', label: 'Link (href)' }]],
+        newItem: () => ({ label: 'New Link', href: '#' }),
+      },
+      'story.paragraphs': {
+        container: 'storyParagraphsList', itemLabel: 'Paragraph',
+        fields: [{ textarea: 4 }],
+        newItem: () => 'New paragraph text.',
+      },
+      'story.amharicParagraphs': {
+        container: 'storyAmharicList', itemLabel: 'Amharic Paragraph',
+        fields: [{ textarea: 4 }],
+        newItem: () => 'አዲስ አንቀጽ',
+      },
+      'services.cards': {
+        container: 'servicesCardsList', itemLabel: 'Service',
+        fields: [
+          [{ key: 'number', label: 'Number' }, { key: 'title', label: 'Title' }],
+          { key: 'en', label: 'English Body', textarea: 3 },
+          { key: 'am', label: 'Amharic Body', textarea: 3 },
+          { key: 'image', label: 'Image URL (optional)', type: 'url', preview: true, placeholder: 'https://...' },
+        ],
+        newItem: (items) => ({
+          number: String(items.length + 1).padStart(2, '0'),
+          title: 'New Service', en: '', am: '', image: '',
+        }),
+      },
+      'programs.items': {
+        container: 'programsItemsList', itemLabel: 'Program',
+        fields: [{}],
+        newItem: () => 'New program',
+      },
+      'programs.amharicParagraphs': {
+        container: 'programsAmList', itemLabel: 'Amharic Paragraph',
+        fields: [{ textarea: 3 }],
+        newItem: () => 'አዲስ አንቀጽ',
+      },
+    };
 
-      renderNavLinks();
-      renderStoryParagraphs();
-      renderStoryAmharic();
-      renderServiceCards();
-      renderProgramItems();
-      renderProgramsAm();
+    function buildField(field, bindPath) {
+      const wrap = document.createElement('div');
+      wrap.className = 'field';
+      if (field.label) {
+        const label = document.createElement('label');
+        label.textContent = field.label;
+        wrap.appendChild(label);
+      }
+      const input = document.createElement(field.textarea ? 'textarea' : 'input');
+      if (field.textarea) input.rows = field.textarea;
+      else input.type = field.type || 'text';
+      if (field.placeholder) input.placeholder = field.placeholder;
+      input.dataset.bind = bindPath;
+      wrap.appendChild(input);
+      if (field.preview) {
+        input.dataset.preview = '';
+        const img = document.createElement('img');
+        img.className = 'image-preview';
+        img.alt = '';
+        wrap.appendChild(img);
+      }
+      return wrap;
     }
 
-    function updateImagePreview(id, url) {
-      const img = document.getElementById(id);
+    function buildIconButton(text, title, action, listPath, idx, disabled) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = action === 'remove' ? 'icon-btn icon-btn-danger' : 'icon-btn';
+      btn.textContent = text;
+      btn.title = title;
+      btn.disabled = disabled;
+      Object.assign(btn.dataset, { listAction: action, list: listPath, idx });
+      return btn;
+    }
+
+    function renderList(listPath) {
+      const cfg = LISTS[listPath];
+      const container = $(cfg.container);
+      const items = getPath(state.content, listPath) || [];
+      container.replaceChildren();
+
+      items.forEach((item, i) => {
+        const div = document.createElement('div');
+        div.className = 'list-item';
+
+        const head = document.createElement('div');
+        head.className = 'list-item-head';
+        const label = document.createElement('span');
+        label.className = 'list-item-label';
+        label.textContent = `${cfg.itemLabel} ${i + 1}`;
+        const controls = document.createElement('div');
+        controls.className = 'item-controls';
+        controls.append(
+          buildIconButton('↑', 'Move up', 'up', listPath, i, i === 0),
+          buildIconButton('↓', 'Move down', 'down', listPath, i, i === items.length - 1),
+          buildIconButton('×', 'Remove', 'remove', listPath, i, false),
+        );
+        head.append(label, controls);
+        div.appendChild(head);
+
+        cfg.fields.forEach((field) => {
+          const bind = (f) => f.key ? `${listPath}.${i}.${f.key}` : `${listPath}.${i}`;
+          if (Array.isArray(field)) {
+            const row = document.createElement('div');
+            row.className = 'row-2';
+            field.forEach((f) => row.appendChild(buildField(f, bind(f))));
+            div.appendChild(row);
+          } else {
+            div.appendChild(buildField(field, bind(field)));
+          }
+        });
+
+        container.appendChild(div);
+      });
+
+      fillInputs(container);
+    }
+
+    function updateImagePreview(input) {
+      const img = input.parentElement.querySelector('.image-preview');
       if (!img) return;
-      if (url && /^https?:\/\//.test(url)) {
+      const url = input.value.trim();
+      if (/^https?:\/\//.test(url)) {
         img.src = url;
         img.classList.add('visible');
       } else {
@@ -911,241 +1055,70 @@
       }
     }
 
-    function renderList(containerId, items, renderItem) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = '';
-      items.forEach((item, i) => {
-        const div = document.createElement('div');
-        div.className = 'list-item';
-        div.innerHTML = renderItem(item, i, items.length);
-        container.appendChild(div);
+    function fillInputs(root) {
+      root.querySelectorAll('[data-bind]').forEach((el) => {
+        const val = getPath(state.content, el.dataset.bind);
+        el.value = val == null ? '' : String(val);
+        if ('preview' in el.dataset) updateImagePreview(el);
       });
     }
 
-    function renderNavLinks() {
-      const items = state.content.nav.links || [];
-      renderList('navLinksList', items, (item, i, total) => `
-        <div class="list-item-head">
-          <span class="list-item-label">Link ${i + 1}</span>
-          <div class="item-controls">
-            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="nav.links" data-idx="${i}" title="Move up">↑</button>
-            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="nav.links" data-idx="${i}" title="Move down">↓</button>
-            <button class="icon-btn icon-btn-danger" data-remove="nav.links" data-idx="${i}" title="Remove">×</button>
-          </div>
-        </div>
-        <div class="row-2">
-          <div class="field">
-            <label>Label</label>
-            <input type="text" data-list-bind="nav.links.${i}.label" value="${escapeAttr(item.label || '')}">
-          </div>
-          <div class="field">
-            <label>Link (href)</label>
-            <input type="text" data-list-bind="nav.links.${i}.href" value="${escapeAttr(item.href || '')}">
-          </div>
-        </div>
-      `);
-      bindListItems();
+    function renderAll() {
+      // Clear lists first so stale item inputs aren't filled, then fill the
+      // static fields and rebuild each list.
+      Object.values(LISTS).forEach((cfg) => $(cfg.container).replaceChildren());
+      fillInputs($('editorView'));
+      Object.keys(LISTS).forEach(renderList);
+      updateDirtyUI();
     }
 
-    function renderStoryParagraphs() {
-      const items = state.content.story.paragraphs || [];
-      renderList('storyParagraphsList', items, (item, i, total) => `
-        <div class="list-item-head">
-          <span class="list-item-label">Paragraph ${i + 1}</span>
-          <div class="item-controls">
-            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="story.paragraphs" data-idx="${i}">↑</button>
-            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="story.paragraphs" data-idx="${i}">↓</button>
-            <button class="icon-btn icon-btn-danger" data-remove="story.paragraphs" data-idx="${i}">×</button>
-          </div>
-        </div>
-        <div class="field">
-          <textarea data-list-bind="story.paragraphs.${i}" rows="4">${escapeHtml(item)}</textarea>
-        </div>
-      `);
-      bindListItems();
-    }
-
-    function renderStoryAmharic() {
-      const items = state.content.story.amharicParagraphs || [];
-      renderList('storyAmharicList', items, (item, i, total) => `
-        <div class="list-item-head">
-          <span class="list-item-label">Amharic Paragraph ${i + 1}</span>
-          <div class="item-controls">
-            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="story.amharicParagraphs" data-idx="${i}">↑</button>
-            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="story.amharicParagraphs" data-idx="${i}">↓</button>
-            <button class="icon-btn icon-btn-danger" data-remove="story.amharicParagraphs" data-idx="${i}">×</button>
-          </div>
-        </div>
-        <div class="field">
-          <textarea data-list-bind="story.amharicParagraphs.${i}" rows="4">${escapeHtml(item)}</textarea>
-        </div>
-      `);
-      bindListItems();
-    }
-
-    function renderServiceCards() {
-      const items = state.content.services.cards || [];
-      renderList('servicesCardsList', items, (item, i, total) => `
-        <div class="list-item-head">
-          <span class="list-item-label">Service ${i + 1}</span>
-          <div class="item-controls">
-            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="services.cards" data-idx="${i}">↑</button>
-            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="services.cards" data-idx="${i}">↓</button>
-            <button class="icon-btn icon-btn-danger" data-remove="services.cards" data-idx="${i}">×</button>
-          </div>
-        </div>
-        <div class="row-2">
-          <div class="field">
-            <label>Number</label>
-            <input type="text" data-list-bind="services.cards.${i}.number" value="${escapeAttr(item.number || '')}">
-          </div>
-          <div class="field">
-            <label>Title</label>
-            <input type="text" data-list-bind="services.cards.${i}.title" value="${escapeAttr(item.title || '')}">
-          </div>
-        </div>
-        <div class="field">
-          <label>English Body</label>
-          <textarea data-list-bind="services.cards.${i}.en" rows="3">${escapeHtml(item.en || '')}</textarea>
-        </div>
-        <div class="field">
-          <label>Amharic Body</label>
-          <textarea data-list-bind="services.cards.${i}.am" rows="3">${escapeHtml(item.am || '')}</textarea>
-        </div>
-        <div class="field">
-          <label>Image URL (optional)</label>
-          <input type="url" data-list-bind="services.cards.${i}.image" data-preview="svcImg${i}" value="${escapeAttr(item.image || '')}" placeholder="https://...">
-          <img id="svcImg${i}" class="image-preview" alt="">
-        </div>
-      `);
-      bindListItems();
-      // init previews
-      items.forEach((it, i) => updateImagePreview('svcImg' + i, it.image || ''));
-    }
-
-    function renderProgramItems() {
-      const items = state.content.programs.items || [];
-      renderList('programsItemsList', items, (item, i, total) => `
-        <div class="list-item-head">
-          <span class="list-item-label">Program ${i + 1}</span>
-          <div class="item-controls">
-            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="programs.items" data-idx="${i}">↑</button>
-            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="programs.items" data-idx="${i}">↓</button>
-            <button class="icon-btn icon-btn-danger" data-remove="programs.items" data-idx="${i}">×</button>
-          </div>
-        </div>
-        <div class="field">
-          <input type="text" data-list-bind="programs.items.${i}" value="${escapeAttr(item)}">
-        </div>
-      `);
-      bindListItems();
-    }
-
-    function renderProgramsAm() {
-      const items = state.content.programs.amharicParagraphs || [];
-      renderList('programsAmList', items, (item, i, total) => `
-        <div class="list-item-head">
-          <span class="list-item-label">Amharic Paragraph ${i + 1}</span>
-          <div class="item-controls">
-            <button class="icon-btn" ${i === 0 ? 'disabled' : ''} data-move-up="programs.amharicParagraphs" data-idx="${i}">↑</button>
-            <button class="icon-btn" ${i === total - 1 ? 'disabled' : ''} data-move-down="programs.amharicParagraphs" data-idx="${i}">↓</button>
-            <button class="icon-btn icon-btn-danger" data-remove="programs.amharicParagraphs" data-idx="${i}">×</button>
-          </div>
-        </div>
-        <div class="field">
-          <textarea data-list-bind="programs.amharicParagraphs.${i}" rows="3">${escapeHtml(item)}</textarea>
-        </div>
-      `);
-      bindListItems();
-    }
-
-    function bindListItems() {
-      document.querySelectorAll('[data-list-bind]').forEach(el => {
-        const path = el.dataset.listBind;
-        el.oninput = () => {
-          setPath(state.content, path, el.value);
-          updateDirtyUI();
-          const previewId = el.dataset.preview;
-          if (previewId) updateImagePreview(previewId, el.value);
-        };
-      });
-    }
-
-    function escapeHtml(s) {
-      return String(s == null ? '' : s)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    }
-    function escapeAttr(s) {
-      return String(s == null ? '' : s)
-        .replace(/&/g, '&amp;').replace(/"/g, '&quot;');
-    }
+    // One delegated listener handles every bound input, including list items.
+    document.addEventListener('input', (e) => {
+      const el = e.target.closest('[data-bind]');
+      if (!el || !state.content) return;
+      setPath(state.content, el.dataset.bind, el.value);
+      if ('preview' in el.dataset) updateImagePreview(el);
+      updateDirtyUI();
+    });
 
     // ══════════════════════════════════════════════════════════════════
     // LIST ACTIONS (add / remove / reorder)
     // ══════════════════════════════════════════════════════════════════
-    const DEFAULTS = {
-      'nav.links': () => ({ label: 'New Link', href: '#' }),
-      'story.paragraphs': () => 'New paragraph text.',
-      'story.amharicParagraphs': () => 'አዲስ አንቀጽ',
-      'services.cards': () => ({ number: '04', title: 'New Service', en: '', am: '', image: '' }),
-      'programs.items': () => 'New program',
-      'programs.amharicParagraphs': () => 'አዲስ አንቀጽ',
-    };
-
-    function rerenderForList(path) {
-      const map = {
-        'nav.links': renderNavLinks,
-        'story.paragraphs': renderStoryParagraphs,
-        'story.amharicParagraphs': renderStoryAmharic,
-        'services.cards': renderServiceCards,
-        'programs.items': renderProgramItems,
-        'programs.amharicParagraphs': renderProgramsAm,
-      };
-      (map[path] || (() => {}))();
-    }
-
     document.addEventListener('click', (e) => {
+      if (!state.content) return;
+
       const add = e.target.closest('[data-add]');
       if (add) {
         const path = add.dataset.add;
-        const arr = getPath(state.content, path) || [];
-        arr.push(DEFAULTS[path]());
-        setPath(state.content, path, arr);
-        rerenderForList(path);
+        const items = getPath(state.content, path) || [];
+        items.push(LISTS[path].newItem(items));
+        setPath(state.content, path, items);
+        renderList(path);
         updateDirtyUI();
         return;
       }
-      const remove = e.target.closest('[data-remove]');
-      if (remove) {
-        if (!confirm('Remove this item?')) return;
-        const path = remove.dataset.remove;
-        const idx = parseInt(remove.dataset.idx, 10);
-        const arr = getPath(state.content, path);
-        arr.splice(idx, 1);
-        rerenderForList(path);
-        updateDirtyUI();
-        return;
+
+      const btn = e.target.closest('[data-list-action]');
+      if (!btn) return;
+      const path = btn.dataset.list;
+      const idx = Number(btn.dataset.idx);
+      const items = getPath(state.content, path);
+      if (!Array.isArray(items)) return;
+
+      switch (btn.dataset.listAction) {
+        case 'remove':
+          if (!confirm('Remove this item?')) return;
+          items.splice(idx, 1);
+          break;
+        case 'up':
+          if (idx > 0) [items[idx - 1], items[idx]] = [items[idx], items[idx - 1]];
+          break;
+        case 'down':
+          if (idx < items.length - 1) [items[idx + 1], items[idx]] = [items[idx], items[idx + 1]];
+          break;
       }
-      const up = e.target.closest('[data-move-up]');
-      if (up) {
-        const path = up.dataset.moveUp;
-        const idx = parseInt(up.dataset.idx, 10);
-        const arr = getPath(state.content, path);
-        if (idx > 0) [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
-        rerenderForList(path);
-        updateDirtyUI();
-        return;
-      }
-      const down = e.target.closest('[data-move-down]');
-      if (down) {
-        const path = down.dataset.moveDown;
-        const idx = parseInt(down.dataset.idx, 10);
-        const arr = getPath(state.content, path);
-        if (idx < arr.length - 1) [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
-        rerenderForList(path);
-        updateDirtyUI();
-        return;
-      }
+      renderList(path);
+      updateDirtyUI();
     });
 
     // ══════════════════════════════════════════════════════════════════
@@ -1156,26 +1129,21 @@
       hero: { title: 'Hero Section', desc: 'The first thing visitors see.' },
       story: { title: 'Our Story', desc: 'Founding story, paragraphs, and Amharic translation.' },
       banner: { title: 'Banner', desc: 'Dark-background full-width banner.' },
-      services: { title: 'Services', desc: 'The three service cards.' },
+      services: { title: 'Services', desc: 'The service cards.' },
       programs: { title: 'Programs', desc: 'Program list and Amharic callout card.' },
       contact: { title: 'Contact & Footer', desc: 'Contact info, Amharic card, and footer.' },
     };
 
     function switchSection(name) {
       state.section = name;
-      document.querySelectorAll('.nav-btn').forEach(b => {
-        b.classList.toggle('active', b.dataset.section === name);
-      });
-      document.querySelectorAll('.section-group').forEach(g => {
-        g.classList.toggle('active', g.dataset.section === name);
-      });
-      const meta = SECTION_META[name];
-      document.getElementById('sectionTitle').textContent = meta.title;
-      document.getElementById('sectionDesc').textContent = meta.desc;
+      document.querySelectorAll('.nav-btn').forEach((b) => b.classList.toggle('active', b.dataset.section === name));
+      document.querySelectorAll('.section-group').forEach((g) => g.classList.toggle('active', g.dataset.section === name));
+      $('sectionTitle').textContent = SECTION_META[name].title;
+      $('sectionDesc').textContent = SECTION_META[name].desc;
       window.scrollTo(0, 0);
     }
 
-    document.getElementById('sectionNav').addEventListener('click', (e) => {
+    $('sectionNav').addEventListener('click', (e) => {
       const btn = e.target.closest('.nav-btn');
       if (btn) switchSection(btn.dataset.section);
     });
@@ -1183,38 +1151,49 @@
     // ══════════════════════════════════════════════════════════════════
     // LOGIN / INIT
     // ══════════════════════════════════════════════════════════════════
-    async function enterEditor() {
-      document.getElementById('loginView').style.display = 'none';
-      document.getElementById('editorView').style.display = 'grid';
-      const sessionExpiry = new Date(state.session.expiresAt).toLocaleString();
-      document.getElementById('repoMeta').textContent = `Signed in as ${state.session.username || 'admin'}\nSession expires ${sessionExpiry}`;
+    function restoreDraft() {
+      const draft = readStorage(DRAFT_KEY);
+      writeStorage(DRAFT_KEY, null);
+      if (!draft || !draft.content || JSON.stringify(draft.content) === state.original) return;
+      const changedSince = draft.sha && state.sha && draft.sha !== state.sha;
+      const question = changedSince
+        ? 'You have unsaved edits from your last session, but the site content has been changed since. Restoring them will overwrite those newer changes when you publish. Restore anyway?'
+        : 'Restore the unsaved edits from your last session?';
+      if (confirm(question)) state.content = draft.content;
+    }
 
-      showAlert('editorAlert', 'Loading content…', 'success');
+    async function enterEditor() {
+      $('loginView').style.display = 'none';
+      $('editorView').style.display = 'grid';
+      const expires = new Date(state.session.expiresAt).toLocaleString();
+      $('repoMeta').textContent = `Signed in as ${state.session.username || 'admin'}\nSession expires ${expires}`;
+      await reloadContent('Loading content…');
+    }
+
+    async function reloadContent(message) {
+      showAlert('editorAlert', message, 'success');
       try {
-        await fetchContent();
-        showAlert('editorAlert', '');
-        bindFields();
-        updateDirtyUI();
+        const warning = await loadContent();
+        restoreDraft();
+        showAlert('editorAlert', warning || '');
+        renderAll();
       } catch (err) {
-        showAlert('editorAlert', err.message, 'error');
+        if (err instanceof SessionExpiredError) return handleSessionExpired();
+        showAlert('editorAlert', err.message);
       }
     }
 
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    $('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const username = document.getElementById('loginUsername').value.trim();
-      const password = document.getElementById('loginPassword').value;
+      const username = $('loginUsername').value.trim();
+      const password = $('loginPassword').value;
       if (!username || !password) {
         showAlert('loginAlert', 'Username and password are required.');
         return;
       }
 
-      const btn = document.getElementById('loginBtn');
-      const label = document.getElementById('loginBtnLabel');
-      btn.disabled = true;
-      label.innerHTML = '<span class="loader"></span>';
+      setBusy('loginBtn', 'loginBtnLabel', true);
       showAlert('loginAlert', '');
-
       try {
         const res = await fetch('/api/login', {
           method: 'POST',
@@ -1222,62 +1201,53 @@
           body: JSON.stringify({ username, password }),
         });
         const body = await res.json().catch(() => ({}));
-        if (!res.ok) {
-          throw new Error(body.error || `Sign-in failed (${res.status})`);
-        }
+        if (!res.ok) throw new Error(body.error || `Sign-in failed (HTTP ${res.status})`);
         state.session = { token: body.token, expiresAt: body.expiresAt, username };
-        saveSession(state.session);
-        await enterEditor();
+        writeStorage(SESSION_KEY, state.session);
       } catch (err) {
         state.session = null;
         showAlert('loginAlert', err.message);
+        return;
       } finally {
-        btn.disabled = false;
-        label.textContent = 'Sign In';
+        setBusy('loginBtn', 'loginBtnLabel', false, 'Sign In');
       }
+      await enterEditor();
     });
 
-    document.getElementById('logoutBtn').addEventListener('click', () => {
+    $('logoutBtn').addEventListener('click', () => {
       if (isDirty() && !confirm('Discard unsaved changes and sign out?')) return;
-      clearSession();
-      location.reload();
+      writeStorage(SESSION_KEY, null);
+      writeStorage(DRAFT_KEY, null);
+      state.session = null;
+      state.content = null;
+      updateDirtyUI();
+      showLogin();
     });
 
-    document.getElementById('reloadBtn').addEventListener('click', async () => {
+    $('reloadBtn').addEventListener('click', () => {
       if (isDirty() && !confirm('Discard unsaved changes and reload?')) return;
-      showAlert('editorAlert', 'Reloading…', 'success');
-      try {
-        await fetchContent();
-        showAlert('editorAlert', '');
-        bindFields();
-        updateDirtyUI();
-      } catch (err) {
-        showAlert('editorAlert', err.message);
-      }
+      reloadContent('Reloading…');
     });
 
-    document.getElementById('discardBtn').addEventListener('click', () => {
+    $('discardBtn').addEventListener('click', () => {
       if (!confirm('Discard all unsaved changes?')) return;
       state.content = JSON.parse(state.original);
-      bindFields();
-      updateDirtyUI();
+      renderAll();
     });
 
-    document.getElementById('saveBtn').addEventListener('click', async () => {
-      const btn = document.getElementById('saveBtn');
-      const label = document.getElementById('saveBtnLabel');
-      btn.disabled = true;
-      label.innerHTML = '<span class="loader"></span>';
+    $('saveBtn').addEventListener('click', async () => {
+      if (!isDirty()) return;
+      setBusy('saveBtn', 'saveBtnLabel', true);
       showAlert('editorAlert', '');
       try {
-        await commitContent();
-        showAlert('editorAlert', 'Published! Vercel will redeploy in ~30s.', 'success');
+        await publishContent();
+        showAlert('editorAlert', 'Published! Vercel will redeploy the site in about a minute.', 'success');
         setTimeout(() => showAlert('editorAlert', ''), 6000);
       } catch (err) {
+        if (err instanceof SessionExpiredError) return handleSessionExpired();
         showAlert('editorAlert', `Save failed: ${err.message}`);
       } finally {
-        btn.disabled = false;
-        label.textContent = 'Publish Changes';
+        setBusy('saveBtn', 'saveBtnLabel', false, 'Publish Changes');
         updateDirtyUI();
       }
     });
@@ -1290,13 +1260,8 @@
     // ══════════════════════════════════════════════════════════════════
     // BOOT
     // ══════════════════════════════════════════════════════════════════
-    (function boot() {
-      const session = loadSession();
-      if (session) {
-        state.session = session;
-        enterEditor();
-      }
-    })();
+    state.session = loadSession();
+    if (state.session) enterEditor();
   </script>
 </body>
 </html>
