@@ -24,7 +24,7 @@ module.exports = async function handler(req, res) {
     return res.status(401).json({ error: 'Session expired. Please sign in again.' });
   }
 
-  const { content, sha: clientSha } = req.body || {};
+  const { content, sha } = req.body || {};
   if (!isPlainObject(content)) {
     return res.status(400).json({ error: 'Missing or invalid content payload.' });
   }
@@ -34,24 +34,16 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: `Content is missing required sections: ${missing.join(', ')}.` });
   }
 
-  const fileUrl = `https://api.github.com/repos/${gh.repo}/contents/${gh.path}`;
-  const headers = githubHeaders(gh.token);
+  // The SHA of the version the admin edited is required: GitHub rejects the
+  // write (409) if the file changed since, instead of silently overwriting it.
+  if (typeof sha !== 'string' || !/^[0-9a-f]{40}$/.test(sha)) {
+    return res.status(400).json({ error: 'Missing content version. Click Reload and try again.' });
+  }
 
   try {
-    // The client sends the SHA it loaded so GitHub rejects the write (409) if
-    // the file changed in the meantime, instead of silently overwriting it.
-    let sha = typeof clientSha === 'string' && clientSha ? clientSha : null;
-    if (!sha) {
-      const metaRes = await fetch(`${fileUrl}?ref=${encodeURIComponent(gh.branch)}`, { headers });
-      if (!metaRes.ok) {
-        return res.status(502).json({ error: await describeGithubError(metaRes, 'Could not read current content.json') });
-      }
-      sha = (await metaRes.json()).sha;
-    }
-
-    const putRes = await fetch(fileUrl, {
+    const putRes = await fetch(`https://api.github.com/repos/${gh.repo}/contents/${gh.path}`, {
       method: 'PUT',
-      headers: { ...headers, 'Content-Type': 'application/json' },
+      headers: { ...githubHeaders(gh.token), 'Content-Type': 'application/json' },
       body: JSON.stringify({
         message: `Update landing page content via admin portal (${new Date().toISOString()})`,
         content: Buffer.from(JSON.stringify(content, null, 2) + '\n', 'utf8').toString('base64'),

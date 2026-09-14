@@ -1,5 +1,7 @@
 const { safeEqual, signSession } = require('./_lib/session');
 
+const FAILED_LOGIN_DELAY_MS = 1000;
+
 module.exports = async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -21,6 +23,9 @@ module.exports = async function handler(req, res) {
   const userOk = safeEqual(username, ADMIN_USERNAME);
   const passOk = safeEqual(password, ADMIN_PASSWORD);
   if (!userOk || !passOk) {
+    // Slow down password guessing. Serverless instances share no state, so
+    // this is not a real rate limit — pair it with a Vercel Firewall rule.
+    await new Promise((resolve) => setTimeout(resolve, FAILED_LOGIN_DELAY_MS));
     return res.status(401).json({ error: 'Invalid username or password' });
   }
 

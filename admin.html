@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
   <title>Merkuz — Admin Portal</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -268,6 +269,10 @@
       display: none;
     }
     .section-group.active { display: block; }
+    /* Nothing to edit until content has loaded. */
+    .no-content .section-group.active,
+    .no-content .diff-hint,
+    .no-content .save-bar { display: none; }
 
     .card {
       background: var(--white);
@@ -464,7 +469,7 @@
       <div id="editorAlert"></div>
 
       <div class="diff-hint">
-        Tip: For formatted text (like <code style="background:var(--linen);padding:1px 6px;border-radius:4px;">&lt;strong&gt;</code> bold or <code style="background:var(--linen);padding:1px 6px;border-radius:4px;">&lt;br&gt;</code> line breaks), you can use HTML tags directly in body/paragraph fields.
+        Tip: Line breaks you type (Enter) appear on the site. In fields marked "HTML allowed", paragraphs, and service bodies you can also use tags like <code style="background:var(--linen);padding:1px 6px;border-radius:4px;">&lt;strong&gt;bold&lt;/strong&gt;</code> or <code style="background:var(--linen);padding:1px 6px;border-radius:4px;">&lt;em&gt;italic&lt;/em&gt;</code>.
       </div>
 
       <!-- NAV -->
@@ -779,6 +784,8 @@
       content: null,    // parsed JSON being edited
       original: null,   // JSON string of the last loaded/published content (for dirty check)
       sha: null,        // GitHub blob SHA of the loaded content (for conflict detection)
+      readOnly: false,  // true when showing the deployed copy because GitHub couldn't be read
+      saving: false,
       section: 'nav',
     };
 
@@ -786,6 +793,7 @@
     const DRAFT_KEY = 'merkuz-admin-draft';
 
     class SessionExpiredError extends Error {}
+    class ConflictError extends Error {}
 
     // ══════════════════════════════════════════════════════════════════
     // UTILITIES
@@ -800,6 +808,29 @@
       const last = keys.pop();
       const parent = keys.reduce((o, k) => (o[k] = o[k] || {}), obj);
       parent[last] = value;
+    }
+
+    const isPlainObject = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+    const sameJson = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+    // Three-way merge: applies the changes made from `base` to `mine` onto
+    // `theirs` (a newer version), so edits survive someone else's publish.
+    // Lists whose length changed are taken whole from `mine`.
+    function mergeEdits(base, mine, theirs) {
+      if (sameJson(mine, base)) return theirs;
+      if (isPlainObject(base) && isPlainObject(mine) && isPlainObject(theirs)) {
+        const out = { ...theirs };
+        for (const key of new Set([...Object.keys(base), ...Object.keys(mine)])) {
+          if (!(key in mine)) delete out[key];
+          else out[key] = mergeEdits(base[key], mine[key], theirs[key]);
+        }
+        return out;
+      }
+      if (Array.isArray(base) && Array.isArray(mine) && Array.isArray(theirs) &&
+          base.length === mine.length && mine.length === theirs.length) {
+        return mine.map((item, i) => mergeEdits(base[i], item, theirs[i]));
+      }
+      return mine;
     }
 
     function showAlert(elId, msg, type = 'error') {
@@ -828,16 +859,30 @@
     function updateDirtyUI() {
       const dirty = isDirty();
       const status = $('saveStatus');
-      status.textContent = dirty ? 'You have unsaved changes.' : 'All changes saved.';
+      status.textContent = state.readOnly ? 'Publishing is unavailable (see the message above).'
+        : dirty ? 'You have unsaved changes.' : 'All changes saved.';
       status.classList.toggle('dirty', dirty);
-      $('saveBtn').disabled = !dirty;
-      $('discardBtn').disabled = !dirty;
+      $('saveBtn').disabled = !dirty || state.readOnly || state.saving;
+      $('discardBtn').disabled = !dirty || state.saving;
+      $('reloadBtn').disabled = state.saving;
+      $('logoutBtn').disabled = state.saving;
+      $('editorView').classList.toggle('no-content', state.content == null);
     }
 
     function setBusy(btnId, labelId, busy, idleText) {
       $(btnId).disabled = busy;
       if (busy) $(labelId).innerHTML = '<span class="loader"></span>';
       else $(labelId).textContent = idleText;
+    }
+
+    // Unsaved edits are stored with the version they were based on, so they
+    // can be merged onto newer content after re-login or a conflict.
+    function stashDraft(autoRestore) {
+      writeStorage(DRAFT_KEY, {
+        base: JSON.parse(state.original),
+        content: state.content,
+        autoRestore,
+      });
     }
 
     // ══════════════════════════════════════════════════════════════════
@@ -859,9 +904,8 @@
       $('loginPassword').value = '';
     }
 
-    // Keeps unsaved edits in localStorage so they survive re-authentication.
     function handleSessionExpired() {
-      if (isDirty()) writeStorage(DRAFT_KEY, { content: state.content, sha: state.sha });
+      if (isDirty()) stashDraft(false);
       writeStorage(SESSION_KEY, null);
       state.session = null;
       state.content = null;
@@ -871,15 +915,16 @@
     // ══════════════════════════════════════════════════════════════════
     // CONTENT I/O
     // ══════════════════════════════════════════════════════════════════
-    function setContent(content, sha) {
+    function setContent(content, sha, readOnly) {
       state.content = content;
       state.original = JSON.stringify(content);
       state.sha = sha || null;
+      state.readOnly = readOnly;
     }
 
     // Loads the latest content from GitHub (via /api/content). If that fails,
-    // falls back to the deployed /content.json so the admin can still review
-    // it, and returns a warning explaining why publishing may not work.
+    // shows the deployed /content.json read-only — it may be older than
+    // GitHub, so publishing edits made to it could overwrite newer content.
     async function loadContent() {
       let apiError;
       try {
@@ -887,7 +932,7 @@
         const body = await res.json().catch(() => ({}));
         if (res.status === 401) throw new SessionExpiredError();
         if (res.ok) {
-          setContent(body.content, body.sha);
+          setContent(body.content, body.sha, false);
           return null;
         }
         apiError = body.error || `Could not load the latest content (HTTP ${res.status}).`;
@@ -898,8 +943,8 @@
 
       const res = await fetch('/content.json?t=' + Date.now(), { cache: 'no-store' });
       if (!res.ok) throw new Error(`${apiError} The published content.json could not be loaded either (HTTP ${res.status}).`);
-      setContent(await res.json(), null);
-      return `${apiError} Showing the currently published content instead; publishing will fail until this is fixed.`;
+      setContent(await res.json(), null, true);
+      return `${apiError} Showing the currently published content; publishing is disabled until this is fixed.`;
     }
 
     async function publishContent() {
@@ -911,6 +956,7 @@
       });
       const body = await res.json().catch(() => ({}));
       if (res.status === 401) throw new SessionExpiredError();
+      if (res.status === 409) throw new ConflictError(body.error);
       if (!res.ok) throw new Error(body.error || `Save failed (HTTP ${res.status})`);
       // Use the snapshot, not current state: edits made while the request was
       // in flight have not been published and must stay marked as unsaved.
@@ -931,12 +977,12 @@
       },
       'story.paragraphs': {
         container: 'storyParagraphsList', itemLabel: 'Paragraph',
-        fields: [{ textarea: 4 }],
+        fields: [{ label: 'Text', textarea: 4 }],
         newItem: () => 'New paragraph text.',
       },
       'story.amharicParagraphs': {
         container: 'storyAmharicList', itemLabel: 'Amharic Paragraph',
-        fields: [{ textarea: 4 }],
+        fields: [{ label: 'Text', textarea: 4 }],
         newItem: () => 'አዲስ አንቀጽ',
       },
       'services.cards': {
@@ -954,15 +1000,29 @@
       },
       'programs.items': {
         container: 'programsItemsList', itemLabel: 'Program',
-        fields: [{}],
+        fields: [{ label: 'Name' }],
         newItem: () => 'New program',
       },
       'programs.amharicParagraphs': {
         container: 'programsAmList', itemLabel: 'Amharic Paragraph',
-        fields: [{ textarea: 3 }],
+        fields: [{ label: 'Text', textarea: 3 }],
         newItem: () => 'አዲስ አንቀጽ',
       },
     };
+
+    let fieldIdCounter = 0;
+
+    // Associates each .field label with its input so clicking the label
+    // focuses the input and screen readers announce the label.
+    function linkLabels(root) {
+      root.querySelectorAll('.field').forEach((field) => {
+        const label = field.querySelector(':scope > label');
+        const control = field.querySelector(':scope > input, :scope > textarea, :scope > select');
+        if (!label || !control || label.htmlFor) return;
+        if (!control.id) control.id = `field-${++fieldIdCounter}`;
+        label.htmlFor = control.id;
+      });
+    }
 
     function buildField(field, bindPath) {
       const wrap = document.createElement('div');
@@ -994,6 +1054,7 @@
       btn.className = action === 'remove' ? 'icon-btn icon-btn-danger' : 'icon-btn';
       btn.textContent = text;
       btn.title = title;
+      btn.setAttribute('aria-label', title);
       btn.disabled = disabled;
       Object.assign(btn.dataset, { listAction: action, list: listPath, idx });
       return btn;
@@ -1039,6 +1100,7 @@
         container.appendChild(div);
       });
 
+      linkLabels(container);
       fillInputs(container);
     }
 
@@ -1067,8 +1129,10 @@
       // Clear lists first so stale item inputs aren't filled, then fill the
       // static fields and rebuild each list.
       Object.values(LISTS).forEach((cfg) => $(cfg.container).replaceChildren());
-      fillInputs($('editorView'));
-      Object.keys(LISTS).forEach(renderList);
+      if (state.content) {
+        fillInputs($('editorView'));
+        Object.keys(LISTS).forEach(renderList);
+      }
       updateDirtyUI();
     }
 
@@ -1151,15 +1215,22 @@
     // ══════════════════════════════════════════════════════════════════
     // LOGIN / INIT
     // ══════════════════════════════════════════════════════════════════
+    // Re-applies stashed edits on top of the freshly loaded content.
+    // Returns a notice to show, if any.
     function restoreDraft() {
       const draft = readStorage(DRAFT_KEY);
+      if (!draft || !isPlainObject(draft.content)) return null;
+      if (state.readOnly) return null; // keep the draft until the latest content can be loaded
       writeStorage(DRAFT_KEY, null);
-      if (!draft || !draft.content || JSON.stringify(draft.content) === state.original) return;
-      const changedSince = draft.sha && state.sha && draft.sha !== state.sha;
-      const question = changedSince
-        ? 'You have unsaved edits from your last session, but the site content has been changed since. Restoring them will overwrite those newer changes when you publish. Restore anyway?'
-        : 'Restore the unsaved edits from your last session?';
-      if (confirm(question)) state.content = draft.content;
+
+      const merged = isPlainObject(draft.base)
+        ? mergeEdits(draft.base, draft.content, state.content)
+        : draft.content;
+      if (sameJson(merged, state.content)) return null;
+      if (!draft.autoRestore && !confirm('Restore the unsaved edits from your last session?')) return null;
+
+      state.content = merged;
+      return 'Your unsaved edits were re-applied to the latest content. Review them, then click Publish Changes.';
     }
 
     async function enterEditor() {
@@ -1174,12 +1245,15 @@
       showAlert('editorAlert', message, 'success');
       try {
         const warning = await loadContent();
-        restoreDraft();
-        showAlert('editorAlert', warning || '');
-        renderAll();
+        const restored = restoreDraft();
+        if (warning) showAlert('editorAlert', warning);
+        else showAlert('editorAlert', restored || '', 'success');
       } catch (err) {
         if (err instanceof SessionExpiredError) return handleSessionExpired();
+        state.content = null;
         showAlert('editorAlert', err.message);
+      } finally {
+        renderAll();
       }
     }
 
@@ -1226,6 +1300,9 @@
 
     $('reloadBtn').addEventListener('click', () => {
       if (isDirty() && !confirm('Discard unsaved changes and reload?')) return;
+      // Discard now, so a session expiring during the reload doesn't stash
+      // the edits the admin just chose to throw away.
+      if (state.content) state.content = JSON.parse(state.original);
       reloadContent('Reloading…');
     });
 
@@ -1236,8 +1313,10 @@
     });
 
     $('saveBtn').addEventListener('click', async () => {
-      if (!isDirty()) return;
+      if (!isDirty() || state.readOnly || state.saving) return;
+      state.saving = true;
       setBusy('saveBtn', 'saveBtnLabel', true);
+      updateDirtyUI();
       showAlert('editorAlert', '');
       try {
         await publishContent();
@@ -1245,8 +1324,17 @@
         setTimeout(() => showAlert('editorAlert', ''), 6000);
       } catch (err) {
         if (err instanceof SessionExpiredError) return handleSessionExpired();
+        if (err instanceof ConflictError) {
+          // Someone else published first: keep these edits and re-apply them
+          // on top of the latest version.
+          stashDraft(true);
+          state.content = JSON.parse(state.original);
+          await reloadContent('Someone else published changes since you loaded the editor. Loading the latest version…');
+          return;
+        }
         showAlert('editorAlert', `Save failed: ${err.message}`);
       } finally {
+        state.saving = false;
         setBusy('saveBtn', 'saveBtnLabel', false, 'Publish Changes');
         updateDirtyUI();
       }
@@ -1260,6 +1348,7 @@
     // ══════════════════════════════════════════════════════════════════
     // BOOT
     // ══════════════════════════════════════════════════════════════════
+    linkLabels(document);
     state.session = loadSession();
     if (state.session) enterEditor();
   </script>

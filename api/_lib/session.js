@@ -81,8 +81,7 @@ async function describeGithubError(res, action) {
       'Check that GITHUB_TOKEN has "Contents: Read and write" access to the repository.';
   }
   if (res.status === 409) {
-    return 'The content was changed by someone else since you loaded it. ' +
-      'Click Reload to get the latest version, then re-apply your edits.';
+    return 'The content was changed by someone else since you loaded it.';
   }
   return `${action}: ${detail}`;
 }

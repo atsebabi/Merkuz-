@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MERKUZ — Holistic Mental Health and Wellness Center</title>
+  <script>document.documentElement.classList.replace('no-js', 'js');</script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&family=Noto+Serif+Ethiopic:wght@400;500;600&display=swap" rel="stylesheet">
@@ -430,7 +431,7 @@
       font-family: 'Noto Serif Ethiopic', serif;
       font-size: 0.85rem;
       line-height: 2.1;
-      color: var(--olive-pale);
+      color: var(--olive-light);
     }
 
     /* ── PROGRAMS ── */
@@ -531,7 +532,7 @@
       white-space: pre-line;
       margin-top: 18px;
       font-size: 0.95rem; line-height: 1.85;
-      color: rgba(249, 246, 241, 0.55);
+      color: rgba(249, 246, 241, 0.7);
       max-width: 440px; font-weight: 300;
     }
     .contact-items { margin-top: 40px; display: grid; gap: 20px; }
@@ -566,7 +567,7 @@
     }
     .contact-right-card > p {
       font-size: 0.9rem; line-height: 1.8;
-      color: rgba(249, 246, 241, 0.5);
+      color: rgba(249, 246, 241, 0.7);
       font-weight: 300;
     }
     .contact-right-card .cta-area {
@@ -587,17 +588,18 @@
       border-top: 1px solid rgba(249, 246, 241, 0.06);
       display: flex; justify-content: space-between; align-items: center;
       font-size: 0.78rem;
-      color: rgba(249, 246, 241, 0.25);
+      color: rgba(249, 246, 241, 0.6);
       letter-spacing: 0.02em;
     }
 
     /* ── SCROLL ANIMATIONS ── */
-    .reveal {
+    /* Only hidden when JS is running to reveal it again. */
+    .js .reveal {
       opacity: 0; transform: translateY(24px);
       transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                   transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .js .reveal.visible { opacity: 1; transform: translateY(0); }
     .rd1 { transition-delay: 0.1s; }
     .rd2 { transition-delay: 0.2s; }
     .rd3 { transition-delay: 0.3s; }
@@ -613,6 +615,15 @@
     .fd5 { animation-delay: 0.9s; }
     @keyframes fadeIn {
       to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .js .reveal, .fade-in {
+        opacity: 1; transform: none;
+        transition: none; animation: none;
+      }
+      .scroll-line { animation: none; }
     }
 
     /* ── RESPONSIVE ── */
@@ -654,7 +665,10 @@
         <a href="#story">Our Story</a>
         <a href="#services">Services</a>
         <a href="#programs">Programs</a>
-        <a href="#contact" class="nav-cta" data-edit="nav.ctaLabel" data-href="nav.ctaHref">Get in Touch</a>
+        <a href="https://www.gofundme.com/f/merkuz.org-id" target="_blank" rel="noopener">Support Us</a>
+        <a href="#services">Telehealth Services</a>
+        <a href="#story">Board of Directors</a>
+        <a href="#contact" class="nav-cta" data-edit="nav.ctaLabel" data-href="nav.ctaHref">Join a Program</a>
       </div>
       <button class="menu-toggle" id="menuToggle" aria-label="Menu" aria-expanded="false" aria-controls="navLinks">
         <span></span><span></span><span></span>
@@ -668,11 +682,9 @@
     <div class="hero-glow hero-glow-2"></div>
     <div class="hero-content">
       <div class="hero-label fade-in fd1" data-edit="hero.label">Whole-Person Healing</div>
-      <h1 class="fade-in fd2" data-edit-html="hero.heading">
-        Holistic <em>Mental Health</em><br>and Wellness Center
-      </h1>
+      <h1 class="fade-in fd2" data-edit-html="hero.heading">Holistic <em>Mental Health</em><br>and Wellness Center</h1>
       <p class="hero-sub fade-in fd3" data-edit="hero.subtitle">Culturally oriented, language-specific access to care where family is the main source of support for individuals with mental illness.</p>
-      <div class="hero-amharic fade-in fd4">
+      <div class="hero-amharic fade-in fd4" lang="am">
         <p data-edit="hero.amharic">ምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል — በባህል ላይ ያተኮረ፣ የአዕምሮ ህመም ላለባቸው ግለሰቦች ዋናው የድጋፍ ምንጭ ቤተሰብ የሆነበት ቋንቋ-ተኮር እንክብካቤ</p>
       </div>
       <div class="hero-btns fade-in fd5">
@@ -691,34 +703,80 @@
     <div class="container">
       <div class="story-layout">
         <div class="story-sticky">
-          <div class="section-label reveal" data-edit="story.label">Our Story</div>
+          <div class="section-label reveal" data-edit="story.label">Our Story </div>
           <h2 class="section-title reveal" data-edit-html="story.title">Built from lived<br>experience, shaped<br>by compassion.</h2>
           <div class="thin-line reveal rd1"></div>
-          <p class="section-desc reveal rd1" data-edit="story.desc">Merkuz was created to close the gap between mental health needs and culturally grounded support.</p>
+          <p class="section-desc reveal rd1" data-edit="story.desc">About MERKUZ
+At MERKUZ, we believe that true healing begins when you finally feel at home. For many in our community, the path to wellness is often obstructed by a "Period of Rejection"—a time when clinical care feels disconnected from cultural reality. We are here to change that.
+By seamlessly blending clinical expertise with the profound richness of African cultural heritage, we transform isolation into a powerful sense of connection. Our approach ensures that no one has to leave their identity at the door to receive world-class care. We aren't just treating symptoms; we are fostering a homecoming where your heritage is the heartbeat of your healing. At MERKUZ, you are never an outsider in your own recovery—you are exactly where you belong.</p>
         </div>
 
         <div>
           <div class="story-body" id="storyBody">
-            <p class="reveal">Merkuz Holistic Mental Health and Wellness Center was founded through the lived experience of our founder, <strong>Menbere Abere</strong>, who spent over a decade as a caregiver for loved ones living with mental health conditions. Her personal journey ignited a deep commitment to support others &mdash; especially those from underrepresented communities &mdash; who are navigating similar challenges.</p>
-
-            <p class="reveal">Located in the Greater Bay Area, Merkuz was created to serve individuals and families from East African backgrounds, including Ethiopian, Eritrean, and Somalian diaspora communities. Many of these families face unique barriers to mental health care due to cultural stigma, language differences, and a general distrust of health systems.</p>
-
+            <p class="reveal">Merkuz Holistic Mental Health and Wellness Center was founded through the lived experience of our founder, <strong>Menbere Abere</strong>, who spent over a decade as a caregiver for loved ones living with mental health conditions. Her personal journey ignited a deep commitment to support others — especially those from underrepresented communities — who are navigating similar challenges.<br>MERKUZ is an Amharic word which means a walking stick. From many years of experience supporting family members who were struggling with mental illness , she wittnesed that being a support like MERKUZ  in their journey from acceptance to recoery was the main component.</p>
             <p class="reveal">A 2022 study by the American Psychological Association highlighted that children and families who have experienced migration-related trauma often encounter significant obstacles in accessing mental health support. Merkuz was founded to help bridge that gap.</p>
-
-            <p class="reveal">We offer culturally sensitive, language-specific services that recognize the central role of family and community in healing. Our work addresses issues related to mental health, substance use, and emotional well-being &mdash; with a particular focus on helping immigrant communities adjust to life in the U.S. We understand the emotional and psychological challenges that come with resettlement and aim to provide the support and tools needed not just to survive, but to thrive.</p>
+            <p class="reveal">Located in the Greater Bay Area, Merkuz was created to serve individuals and families of the African Diaspora communities. Many of these families face unique barriers to mental health care due to cultural stigma, language differences, and a general distrust of health systems.</p>
+            <p class="reveal">We offer culturally sensitive, language-specific services that recognize the central role of family and community in healing. Our work addresses issues related to mental health, substance use, and emotional well-being — with a particular focus on helping immigrant communities adjust to life in the U.S. We understand the emotional and psychological challenges that come with resettlement and aim to provide the support and tools needed not just to survive, but to thrive.</p>
+            <p class="reveal"><strong>Leadership &amp; Governance</strong></p>
+            <p class="reveal"><strong>Menbere Teklu Abere</strong><br>
+<em>Founder &amp; Board Member</em><br>
+A dedicated advocate with over a decade of experience as a caregiver, Menbere founded MERKUZ to bridge the gap in culturally sensitive mental health support for the African Diaspora.
+<br><br>
+<strong>Desta Gebre-Medhin-Huff</strong><br>
+<em>Chief Financial Officer &amp; Founding Board Member</em><br>
+Desta provides strategic financial oversight and governance, ensuring the organization’s resources are effectively managed to support community wellness and sustainability.
+<br><br>
+<strong>Dr. Sara Maklad</strong><br>
+<em>Clinical Director &amp; Founding Board Member</em><br>
+Dr. Maklad leads the clinical vision of MERKUZ, integrating professional mental health expertise with culturally resonant care models to foster deep healing.
+<br><br>
+<strong>Sharon Wossen</strong><br>
+<em> Founding Board Member &amp; Secretary</em><br>
+Sharon is a business-minded professional with a strong foundation in business principles and a passion for growth and development. With a solutions-oriented approach, she is dedicated to building opportunities that create long-term value and meaningful community impact.<br><br>
+<strong>Saron Ephraim Williams</strong><br>
+<em>Founding Board Member</em><br>
+The strategic architect of MERKUZ, Saron brings 12 years of public health expertise across state and federal sectors. As a strategy expert and entrepreneur, she oversees our large-scale initiatives, ensuring they are professionally executed and strategically messaged for maximum community impact.
+<br><br>
+<strong>Dr. Yesalemush Sendeku</strong><br>
+<em>Board Member</em><br>
+A distinguished educator and advocate, Dr. Yesalemush brings decades of institutional knowledge to MERKUZ. She focuses on cultural preservation and community building, ensuring our programs offer meaningful opportunities for growth.</p>
           </div>
 
           <div class="story-quote reveal">
-            <p data-edit="story.quote">At Merkuz, we walk alongside our clients as they begin a new chapter &mdash; grounded in culture, supported by family, and empowered to heal.</p>
+            <p data-edit="story.quote">At Merkuz, we walk alongside our clients as they begin a new chapter — grounded in culture, supported by family, and empowered to heal.</p>
           </div>
 
-          <div class="amharic-block reveal">
+          <div class="amharic-block reveal" lang="am">
             <h3 data-edit="story.amharicTitle">የእኛ ታሪክ</h3>
             <div id="storyAmharic">
               <p>የምርኩዝ ሁለንተናዊ የአእምሮ ጤና እና ደህንነት ማእከል የተመሰረተው የመስራቻችንን ከ10 አመት በላይ የአዕምሮ ጤና ችግር ላለባቸው የቅርብ ቤተሰቦች አስታማሚ እና ረዳት በመሆን ባሳለፉት በግል ጉዞ ምክንያት ያገኙትን ልምድ መሰረት በማድረግ ያገኙትን ልምድ ለሌሎች ለማካፈል ነው።</p>
-              <p>ማእከሉ የተወለደው በካሊፎረኒያ ግዛት በሳንታ ክላራ ካውንቲ ውስጥ ከአእምሮ ህመም ሁኔታዎች ጋር ለሚታገሉ በተለይም ከምስራቅ አፍሪካ (ኢትዮጵያውያን፣ ኤርትራዊ፣ ሶማሊያውያን፣ ወዘተ) ብዙ ግለሰቦች ለመርዳት ካለው ራዕይ ነው።</p>
+              <p>ማእከሉ የተወለደው በካሊፎረኒያ ግዛት በሳንታ ክላራ ካውንቲ ውስጥ ከአእምሮ ህመም ሁኔታዎች ጋር ለሚታገሉ በተለይም ከአፍሪካ በተለያዩ ምክንያቶች ወደ አሜሪካ ለመኖር የመጡ  ብዙ ግለሰቦች ለመርዳት ካለው ራዕይ ነው።</p>
               <p>በ2022 የአሜሪካ የሥነ ልቦና ማኅበር ባደረገው ጥናት፣ በዩናይትድ ስቴትስ የሚኖሩ ሕፃናትና ቤተሰቦች ከስደት ጋር ተያይዞ ጉዳት የደረሰባቸው ሕፃናትና ቤተሰቦች ለጉዳት የሚያጋልጡ እንቅፋቶችን አግኝተዋል። ምርኩዝ ይህንን ክፍተት ለማስተካከል እና የማህበረሰቡ አባላት የአእምሮ ጤናን፣ የአደንዛዥ እፅን አላግባብ መጠቀምን እና ስሜታዊ ደህንነትን ለመፍታት እንሰራለን።</p>
-              <p>ተልእኳችን ወገኖቻችን አዲስ ጉዞ ሲጀምሩ ከአዲሱ ሃገራቸው እንዲሁም ከአካባቢያቸው ግር በተሻለ ሁኔታ እንዲግባቡና እና እንዲያድጉ ነው።</p>
+              <p>ተልእኳችን ወገኖቻችን አዲስ ጉዞ ሲጀምሩ ከአዲሱ ሃገራቸው እንዲሁም ከአካባቢያቸው ጋር በተሻለ ሁኔታ እንዲግባቡና እና እንዲያድጉ ነው።</p>
+              <p><strong>የመሪዎች እና የአመራር ቦርድ</strong><br><br>
+<strong>መንበረ ተክሉ አበራ</strong><br>
+<em>መስራች እና የቦርድ አባል</em><br>
+ከአስር አመታት በላይ የአእምሮ ጤና አስታማሚ በመሆን ባገኙት ልምድ፣ መንበረ ለአፍሪካ ዲያስፖራ ማህበረሰብ ባህላዊ ይዘቱን የጠበቀ የአእምሮ ጤና ድጋፍ ለመስጠት ምርኩዝን መስርተዋል።
+<br><br>
+<strong>ደስታ ገብረመድህን-ሀፍ</strong><br>
+<em>ዋና የፋይናንስ ኦፊሰር እና መስራች የቦርድ አባል</em><br>
+ደስታ የማህበረሰቡን ደህንነት ለማረጋገጥ እንዲቻል ድርጅቱ ውጤታማ የፋይናንስ አስተዳደር እና ስልታዊ አመራር እንዲኖረው ያደርጋሉ።
+<br><br>
+<strong>ዶ/ር ሳራ መክላድ</strong><br>
+<em>የክሊኒካል ዳይሬክተር እና መስራች የቦርድ አባል</em><br>
+ዶ/ር ሳራ ሙያዊ የአእምሮ ጤና እውቀትን ከባህላዊ የሕክምና ሞዴሎች ጋር በማዋሃድ የምርኩዝን ክሊኒካዊ ራዕይ ይመራሉ ።
+<br><br>
+<strong>ሳሮን ኤፍሬም ዊሊያምስ</strong><br>
+<em>መስራች የቦርድ አባል</em><br>
+የምርኩዝ የስትራቴጂ አርክቴክት የሆኑት ሳሮን በክልል እና በፌዴራል የህዝብ ጤና ዘርፎች የ12 ዓመታት ልምድ አላቸው። ትልልቅ ፕሮጀክቶቻችን በማህበረሰቡ ላይ ከፍተኛ ተፅእኖ እንዲፈጥሩ በስልታዊ መልኩ የተመሩ መሆናቸውን ያረጋግጣሉ።
+<br><br>
+<strong>ሻሮን ወሰን</strong><br>
+<em>መስራች የቦርድ አባል እና ፀሐፊ</em><br>
+ሻሮን በንግድ ስራ መርሆች ላይ ጠንካራ መሰረት ያላት እና ለዕድገትና ለልማት ከፍተኛ ፍላጎት ያላት ባለሙያ ነች። የረጅም ጊዜ ጠቀሜታ እና የማህበረሰብ ተፅእኖ የሚፈጥሩ እድሎችን ለመገንባት ትተጋለች።
+<br><br>
+<strong>ዶ/ር ይሳለሙሽ ሰንደቁ</strong><br>
+<em>የቦርድ አባል</em><br>
+ታዋቂ አስተማሪ እና የማህበረሰብ ተሟጋች የሆኑት ዶ/ር የሰላሙሽ፣ ለብዙ አስርተ አመታት ያካበቱትን የእውቀት ልምድ ወደ ምርኩዝ ይዘው መጥተዋል። ትኩረታቸውም ባህልን ጠብቆ ማቆየት እና ማህበረሰብን መገንባት ላይ ነው።</p>
             </div>
           </div>
         </div>
@@ -730,7 +788,7 @@
   <section class="banner">
     <div class="container">
       <h2 class="reveal" data-edit-html="banner.heading">Merkuz Is Your Partner in<br>Mental Health and Wellness</h2>
-      <p class="am-sub reveal rd1" data-edit="banner.amharic">ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው።</p>
+      <p class="am-sub reveal rd1" lang="am" data-edit="banner.amharic">ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው።</p>
     </div>
   </section>
 
@@ -747,22 +805,66 @@
         <div class="s-card reveal rd1">
           <div class="s-card-num">01</div>
           <h3>Counselling Sessions</h3>
-          <p class="en">If you're not sure which program fits you, joining one of our Counseling Sessions is a great place to start. Whatever you decide, keep in mind that you can always try other options until you find the right fit for you.</p>
-          <p class="am">የትኛው ፕሮግራም ለእርስዎ እንደሚስማማ እርግጠኛ ካልሆኑ፣ የእኛን የምክር ክፍለ ጊዜ መቀላቀል ለመጀመር ጥሩ ቦታ ነው። ለእርስዎ የሚስማማዎትን እስኪያገኙ ድረስ ሁልጊዜ ሌሎች አማራጮችን መሞከር እንደሚችሉ ያስታውሱ.</p>
+          <div class="en">If you're not sure which program fits you, joining one of our Counseling Sessions is a great place to start. Whatever you decide, keep in mind that you can always try other options until you find the right fit for you.</div>
+          <p class="am" lang="am">የትኛው ፕሮግራም ለእርስዎ እንደሚስማማ እርግጠኛ ካልሆኑ፣ የእኛን የምክር ክፍለ ጊዜ መቀላቀል ለመጀመር ጥሩ ቦታ ነው። ለእርስዎ የሚስማማዎትን እስኪያገኙ ድረስ ሁልጊዜ ሌሎች አማራጮችን መሞከር እንደሚችሉ ያስታውሱ.</p>
         </div>
-
         <div class="s-card reveal rd2">
           <div class="s-card-num">02</div>
           <h3>Community Forums</h3>
-          <p class="en">Community Forums are a great option for all kinds of individuals, but it all depends on what you're comfortable with. Our only goal is to make you feel safe and supported, so don't hesitate to reach out with any questions.</p>
-          <p class="am">የማህበረሰብ መድረኮች ለሁሉም አይነት ግለሰቦች ምርጥ አማራጭ ናቸው፣ ነገር ግን ሁሉም እርስዎ በሚመቹዎት ላይ የተመሰረተ ነው። ደህንነት እንዲሰማዎት እና እንዲደገፉ ማድረግ ነው ብቸኛ አላማችን።</p>
+          <div class="en">Community Forums are a great option for all kinds of individuals, but it all depends on what you're comfortable with. Our only goal is to make you feel safe and supported, so don't hesitate to reach out with any questions.</div>
+          <p class="am" lang="am">የማህበረሰብ መድረኮች ለሁሉም አይነት ግለሰቦች ምርጥ አማራጭ ናቸው፣ ነገር ግን ሁሉም እርስዎ በሚመቹዎት ላይ የተመሰረተ ነው። ደህንነት እንዲሰማዎት እና እንዲደገፉ ማድረግ ነው ብቸኛ አላማችን።</p>
         </div>
-
         <div class="s-card reveal rd3">
           <div class="s-card-num">03</div>
           <h3>Peer-to-Peer Groups</h3>
-          <p class="en">Our Peer-to-Peer Groups provide the kind of comprehensive support you seek as you navigate your challenges. We want you to feel comfortable and at ease, so let us know what's on your mind.</p>
-          <p class="am">የምርኩዝ ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።</p>
+          <div class="en">Our Peer-to-Peer Groups provide the kind of comprehensive support you seek as you navigate your challenges. We want you to feel comfortable and at ease, so let us know what's on your mind.</div>
+          <p class="am" lang="am">የምርኩዝ ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።</p>
+        </div>
+        <div class="s-card reveal rd3">
+          <div class="s-card-num">04</div>
+          <h3>Telehealth</h3>
+          <div class="en"><h2>Secure &amp; Confidential Online Therapy from Comfort of Your Home</h2>
+<p>At Merkuz Mental Health and Wellness Center, we believe that taking care of your mind should be accessible, convenient, and free of barriers. Our telehealth services allow you to connect with licensed therapists, psychiatrists, and wellness counselors online through a secure video platform. Whether you are dealing with anxiety, depression, managing life transitions, or looking to improve your overall emotional well-being, our team is here to walk alongside you on your journey to healing.</p>
+<h3>Mental Health Services Available via Telehealth</h3>
+<ul>
+  <li><strong>Individual Therapy &amp; Counseling:</strong> One-on-one virtual sessions to address personal challenges, trauma, anxiety, and depression in a safe environment.</li>
+  <li><strong>Psychiatric Consultations:</strong> Secure online evaluations, medication management, and ongoing treatment planning with professional specialists.</li>
+  <li><strong>Holistic Wellness Coaching:</strong> Virtual sessions focused on mindfulness, stress management, and building healthy lifestyle habits to balance mind and body.</li>
+  <li><strong>Group Therapy &amp; Support Circles:</strong> Safe, moderated online spaces to connect with others sharing similar life experiences and healing goals.</li>
+</ul>
+<h3>How it Works</h3>
+<ol>
+  <li><strong>Book an Appointment:</strong> Click our online scheduler below to select a therapist and find a time that fits your weekly schedule.</li>
+  <li><strong>Receive Your Secure Link:</strong> Check your email or text messages for a private, encrypted access link to our virtual waiting room.</li>
+  <li><strong>Attend Your Session:</strong> Click the link using any smartphone, tablet, or computer with a camera to start your secure face-to-face consultation.</li>
+</ol>
+<h3>Your Privacy is Our Absolute Priority</h3>
+<p>We understand that discussing mental health requires absolute trust. All Merkuz virtual care sessions are conducted over an encrypted, HIPAA-compliant telehealth platform. Your data, identity, and conversations remain completely confidential and are never recorded.</p>
+<hr>
+<p style="text-align: center;"><a href="#">Schedule Your Virtual Consultation Now</a></p></div>
+        </div>
+        <div class="s-card reveal rd3">
+          <div class="s-card-num">05</div>
+          <h3>Adults , Family and Children Behavioural Health Services</h3>
+          <div class="en"><h2>Comprehensive Behavioral Health Support for All Stages of Life</h2>
+<p>At Merkuz Mental Health and Wellness Center, we understand that behavioral health challenges affect individuals differently depending on their life stage and family dynamics. Our dedicated team provides compassionate, evidence-based behavioral health services tailored to meet the unique needs of adults, children, adolescents, and families. We are committed to fostering resilience, improving communication, and helping your entire family thrive.</p>
+<h3>Our Specialized Behavioral Health Programs</h3>
+<ul>
+  <li><strong>Adult Behavioral Health:</strong> Individualized care focusing on stress management, trauma recovery, mood regulation, and navigating complex life transitions.</li>
+  <li><strong>Child &amp; Adolescent Services:</strong> Age-appropriate therapy and behavioral interventions to help children and teens cope with academic stress, social anxiety, behavioral challenges, and emotional development.</li>
+  <li><strong>Family Counseling &amp; Dynamics:</strong> Guided sessions designed to strengthen family bonds, resolve conflicts, improve communication, and support parents with effective guidance strategies.</li>
+  <li><strong>Crisis Prevention &amp; Coping Skills:</strong> Proactive tools and personalized strategies to help individuals and families manage acute stressors and build long-term emotional stability.</li>
+</ul>
+<h3>Our Collaborative Approach to Care</h3>
+<ol>
+  <li><strong>Holistic Assessment:</strong> We take the time to understand the unique emotional, social, and behavioral environment surrounding you or your child.</li>
+  <li><strong>Tailored Treatment Plans:</strong> Our specialists design a collaborative care plan that respects your family's values, goals, and cultural background.</li>
+  <li><strong>Integrated Support:</strong> We work together with parents, caregivers, and individuals to ensure consistency, growth, and lasting healing outside of session hours.</li>
+</ol>
+<h3>A Safe Space for Your Family to Grow and Heal</h3>
+<p>Seeking behavioral health support is a powerful step toward a healthier, more balanced life. Whether you are looking for personal guidance, worried about your child's developmental milestones, or hoping to restore harmony to your household, Merkuz provides a safe, judgment-free space to guide you forward.</p>
+<hr>
+<p style="text-align: center;"><a href="#">Connect With a Family Specialist Today</a></p></div>
         </div>
       </div>
     </div>
@@ -781,13 +883,13 @@
           <div class="program-list" id="programList">
             <div class="program-item reveal rd1">
               <div class="program-dot"></div>
-              <span>Secular and Religious Counseling</span>
+              <span>Secular and Religious Counseling and Therapy</span>
             </div>
             <div class="program-item reveal rd2">
               <div class="program-dot"></div>
               <span>Training and Education</span>
             </div>
-            <div class="program-item reveal rd2">
+            <div class="program-item reveal rd3">
               <div class="program-dot"></div>
               <span>Outreach and Community Engagement</span>
             </div>
@@ -795,10 +897,18 @@
               <div class="program-dot"></div>
               <span>Advocacy</span>
             </div>
+            <div class="program-item reveal rd3">
+              <div class="program-dot"></div>
+              <span>Telehealth</span>
+            </div>
+            <div class="program-item reveal rd3">
+              <div class="program-dot"></div>
+              <span>Adults , Family and Children Behavioural Health Services  </span>
+            </div>
           </div>
         </div>
 
-        <div class="programs-am-card reveal rd2">
+        <div class="programs-am-card reveal rd2" lang="am">
           <h3 data-edit="programs.amharicTitle">የምርኩዝ የአእምሮ ጤና እና ደህንነት ማእከል</h3>
           <div id="programsAmParagraphs">
             <p>ይህ የአእምሮ ጤና ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።</p>
@@ -820,23 +930,23 @@
 
           <div class="contact-items">
             <div class="contact-item reveal rd1">
-              <div class="contact-icon">&#9742;</div>
+              <div class="contact-icon" aria-hidden="true">&#9742;</div>
               <a id="contactPhoneLink" href="tel:6692929038" data-edit="contact.phone">669-292-9038</a>
             </div>
             <div class="contact-item reveal rd2">
-              <div class="contact-icon">&#9993;</div>
+              <div class="contact-icon" aria-hidden="true">&#9993;</div>
               <a id="contactEmailLink" href="mailto:hello@merkuzcenter.com" data-edit="contact.email">hello@merkuzcenter.com</a>
             </div>
             <div class="contact-item reveal rd3">
-              <div class="contact-icon">@</div>
+              <div class="contact-icon" aria-hidden="true">@</div>
               <span data-edit="contact.handle">@merkuzcenter</span>
             </div>
           </div>
         </div>
 
         <div class="contact-right-card reveal rd2">
-          <h3 data-edit="contact.rightCardTitle">ሙሉ ሰው ፈውስ</h3>
-          <p data-edit="contact.rightCardDesc">ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው። ለበለጠ መረጃ ያግኙን።</p>
+          <h3 lang="am" data-edit="contact.rightCardTitle">ሙሉ ሰው ፈውስ</h3>
+          <p lang="am" data-edit="contact.rightCardDesc">ምርኩዝ በአእምሮ ጤና እና ደህንነት ላይ የእርስዎ አጋር ነው። ለበለጠ መረጃ ያግኙን።</p>
           <div class="cta-area">
             <a href="mailto:hello@merkuzcenter.com" class="btn btn-light" data-edit="contact.rightCardCtaLabel" data-href="contact.rightCardCtaHref">Contact Us</a>
           </div>
@@ -844,7 +954,7 @@
       </div>
 
       <div class="footer-bar">
-        <span data-edit="contact.footerLeft">&copy; 2026 Merkuz Holistic Mental Health and Wellness Center</span>
+        <span data-edit="contact.footerLeft">© 2026 Merkuz Holistic Mental Health and Wellness Center</span>
         <span data-edit="contact.footerRight">Greater Bay Area, California</span>
       </div>
     </div>
@@ -856,6 +966,19 @@
     // "HTML allowed" (and list/card bodies) are set as HTML.
     function getPath(obj, path) {
       return path.split('.').reduce((o, k) => (o == null ? undefined : o[k]), obj);
+    }
+
+    // Newlines typed in the admin panel become <br>, except next to block
+    // tags (e.g. "<br>\n" or "</li>\n  <li>"), where they are just formatting.
+    const BLOCK_TAGS = 'blockquote|br|div|h[1-6]|hr|li|ol|p|section|table|tbody|td|th|thead|tr|ul';
+    const ENDS_WITH_BLOCK = new RegExp(`<\\/?(?:${BLOCK_TAGS})\\b[^>]*>$`, 'i');
+    const STARTS_WITH_BLOCK = new RegExp(`^<\\/?(?:${BLOCK_TAGS})\\b`, 'i');
+    function nl2br(html) {
+      const s = String(html ?? '').trim();
+      return s.replace(/[ \t]*(?:\r?\n[ \t]*)+/g, (match, offset) => {
+        if (ENDS_WITH_BLOCK.test(s.slice(0, offset)) || STARTS_WITH_BLOCK.test(s.slice(offset + match.length))) return match;
+        return '<br>'.repeat(match.split('\n').length - 1);
+      });
     }
 
     function escapeAttr(s) {
@@ -878,7 +1001,7 @@
       });
       document.querySelectorAll('[data-edit-html]').forEach(el => {
         const v = getPath(c, el.dataset.editHtml);
-        if (typeof v === 'string') el.innerHTML = v;
+        if (typeof v === 'string') el.innerHTML = nl2br(v);
       });
       document.querySelectorAll('[data-href]').forEach(el => {
         const v = getPath(c, el.dataset.href);
@@ -902,14 +1025,15 @@
         });
       }
 
-      // Contact link href prefixes
-      if (c.contact?.phone) {
-        const p = document.getElementById('contactPhoneLink');
-        if (p) p.setAttribute('href', 'tel:' + c.contact.phone.replace(/[^0-9+]/g, ''));
-      }
-      if (c.contact?.email) {
-        const e = document.getElementById('contactEmailLink');
-        if (e) e.setAttribute('href', 'mailto:' + c.contact.email.trim());
+      // Contact links; rows whose value was cleared are hidden.
+      if (c.contact) {
+        const phone = String(c.contact.phone ?? '').trim();
+        const email = String(c.contact.email ?? '').trim();
+        document.getElementById('contactPhoneLink').setAttribute('href', 'tel:' + phone.replace(/[^0-9+]/g, ''));
+        document.getElementById('contactEmailLink').setAttribute('href', 'mailto:' + email);
+        document.querySelectorAll('.contact-item').forEach(item => {
+          item.hidden = item.querySelector('[data-edit]').textContent.trim() === '';
+        });
       }
 
       // Hero optional background image
@@ -921,16 +1045,16 @@
         hero.style.backgroundPosition = 'center';
       }
 
-      renderInto('storyBody', c.story?.paragraphs, p => `<p class="reveal">${p}</p>`);
-      renderInto('storyAmharic', c.story?.amharicParagraphs, p => `<p>${p}</p>`);
+      renderInto('storyBody', c.story?.paragraphs, p => `<p class="reveal">${nl2br(p)}</p>`);
+      renderInto('storyAmharic', c.story?.amharicParagraphs, p => `<p>${nl2br(p)}</p>`);
 
       renderInto('servicesGrid', c.services?.cards, (card, i) => `
         <div class="s-card reveal ${DELAYS[i] || 'rd3'}">
           ${card.image ? `<img class="s-card-img" src="${escapeAttr(card.image)}" alt="" loading="lazy">` : ''}
           <div class="s-card-num">${card.number || ''}</div>
           <h3>${card.title || ''}</h3>
-          <div class="en">${card.en || ''}</div>
-          ${card.am ? `<p class="am">${card.am}</p>` : ''}
+          <div class="en">${nl2br(card.en)}</div>
+          ${card.am ? `<p class="am" lang="am">${nl2br(card.am)}</p>` : ''}
         </div>
       `);
 
@@ -941,7 +1065,7 @@
         </div>
       `);
 
-      renderInto('programsAmParagraphs', c.programs?.amharicParagraphs, p => `<p>${p}</p>`);
+      renderInto('programsAmParagraphs', c.programs?.amharicParagraphs, p => `<p>${nl2br(p)}</p>`);
     }
 
     async function loadContent() {
@@ -978,7 +1102,7 @@
         e.target.classList.add('visible');
         revealObserver.unobserve(e.target);
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0, rootMargin: '0px 0px -40px 0px' }); // threshold 0 so very tall blocks still reveal
 
     function initReveal() {
       document.querySelectorAll('.reveal:not(.visible)').forEach(el => revealObserver.observe(el));
