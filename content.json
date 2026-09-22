@@ -140,21 +140,11 @@
   },
   "programs": {
     "label": "Programs",
-    "title": "Holistic support,<br>delivered with care.",
-    "desc": "Programs designed to support emotional well-being, learning, community connection, and advocacy.",
-    "items": [
-      "Secular and Religious Counseling and Therapy",
-      "Training and Education",
-      "Outreach and Community Engagement",
-      "Advocacy",
-      "Telehealth",
-      "Adults , Family and Children Behavioural Health Services  "
-    ],
-    "amharicTitle": "የምርኩዝ የአእምሮ ጤና እና ደህንነት ማእከል",
-    "amharicParagraphs": [
-      "ይህ የአእምሮ ጤና ድጋፍ ቡድን የጀመረው እያንዳንዳችን ራሳችንን ቻይ መሆናችንን እና የችግራችን መቋቋም አቅምን ማዳበር የምንችለው በማህበረሰቡ እርዳታ እና ድጋፍ ነው በሚል እምነት ነው።",
-      "የእኛ አባላት ለግል እድገት፣ ራስን ለማንፀባረቅ፣ ለመማር እና ለመተሳሰር እና ቦታ ይሰጣሉ። ለበለጠ መረጃ ጋብዘናቹህ እንደምትቀላቀሉን ተስፋ እናደርጋለን!"
-    ]
+    "title": "",
+    "desc": "",
+    "items": [],
+    "amharicTitle": "",
+    "amharicParagraphs": []
   },
   "contact": {
     "label": "We're here for you — open 7 days a week. We accept all insurance plans, including Medicare and Medi-Cal. Everything you share with us stays private and confidential.",
